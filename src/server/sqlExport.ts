@@ -66,15 +66,22 @@ export function generateSqlDump(db: DatabaseState): string {
   nama VARCHAR(150) NOT NULL,
   nis VARCHAR(30) UNIQUE NOT NULL,
   nisn VARCHAR(30) UNIQUE NOT NULL,
+  nik VARCHAR(30),
+  no_kk VARCHAR(30),
+  agama VARCHAR(30),
   kelas_id INTEGER NOT NULL REFERENCES kelas(id),
   jenis_kelamin VARCHAR(20) NOT NULL,
   tempat_lahir VARCHAR(100) NOT NULL,
   tanggal_lahir DATE NOT NULL,
   alamat TEXT NOT NULL,
+  nama_ayah VARCHAR(150),
+  nama_ibu VARCHAR(150),
   nama_orang_tua VARCHAR(150) NOT NULL,
   no_hp_orang_tua VARCHAR(30) NOT NULL,
+  penerima_kip VARCHAR(20),
   status_siswa VARCHAR(30) NOT NULL
-);\n`);
+);
+`);
 
   lines.push(`CREATE TABLE IF NOT EXISTS berita (
   id INTEGER PRIMARY KEY,
@@ -182,7 +189,7 @@ export function generateSqlDump(db: DatabaseState): string {
   lines.push('\n-- DATA SISWA');
   for (const st of db.siswa) {
     lines.push(
-      `INSERT INTO siswa (id, nama, nis, nisn, kelas_id, jenis_kelamin, tempat_lahir, tanggal_lahir, alamat, nama_orang_tua, no_hp_orang_tua, status_siswa) VALUES (${st.id}, ${sqlStr(st.nama)}, ${sqlStr(st.nis)}, ${sqlStr(st.nisn)}, ${st.kelasId}, ${sqlStr(st.jenisKelamin)}, ${sqlStr(st.tempatLahir)}, ${sqlStr(st.tanggalLahir)}, ${sqlStr(st.alamat)}, ${sqlStr(st.namaOrangTua)}, ${sqlStr(st.noHpOrangTua)}, ${sqlStr(st.statusSiswa)});`
+      `INSERT INTO siswa (id, nama, nis, nisn, nik, no_kk, agama, kelas_id, jenis_kelamin, tempat_lahir, tanggal_lahir, alamat, nama_ayah, nama_ibu, nama_orang_tua, no_hp_orang_tua, penerima_kip, status_siswa) VALUES (${st.id}, ${sqlStr(st.nama)}, ${sqlStr(st.nis)}, ${sqlStr(st.nisn)}, ${sqlStr(st.nik)}, ${sqlStr(st.noKk)}, ${sqlStr(st.agama || 'Islam')}, ${st.kelasId}, ${sqlStr(st.jenisKelamin)}, ${sqlStr(st.tempatLahir)}, ${sqlStr(st.tanggalLahir)}, ${sqlStr(st.alamat)}, ${sqlStr(st.namaAyah)}, ${sqlStr(st.namaIbu)}, ${sqlStr(st.namaOrangTua)}, ${sqlStr(st.noHpOrangTua)}, ${sqlStr(st.penerimaKip)}, ${sqlStr(st.statusSiswa)});`
     );
   }
 

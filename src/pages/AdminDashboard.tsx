@@ -7,6 +7,8 @@ import {
   Database,
   Download,
   Edit3,
+  Eye,
+  FileSpreadsheet,
   FileText,
   GraduationCap,
   Image,
@@ -26,7 +28,14 @@ import {
   Upload,
   UserCheck,
   Users,
+  X,
 } from 'lucide-react';
+import {
+  downloadTemplateDapodikXlsx,
+  exportSiswaDapodikXlsx,
+  parseDapodikExcelFile,
+  type DapodikParseResult,
+} from '../utils/dapodikExcel.ts';
 import type {
   AdminUser,
   AgendaItem,
@@ -788,6 +797,32 @@ const AdminProfilPanel: React.FC<{
   );
 };
 
+async function uploadImageFile(token: string, file: File): Promise<string> {
+  const dataUrl = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ''));
+    reader.onerror = () => reject(new Error('Gagal membaca file gambar.'));
+    reader.readAsDataURL(file);
+  });
+
+  const res = await fetch('/api/admin/upload-foto', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      filename: file.name,
+      dataUrl,
+    }),
+  });
+  const json = await res.json();
+  if (!res.ok) {
+    throw new Error(json.error || 'Gagal mengunggah foto.');
+  }
+  return String(json.url);
+}
+
 const AdminGuruPanel: React.FC<{
   token: string;
   guru: Guru[];
@@ -800,14 +835,75 @@ const AdminGuruPanel: React.FC<{
     kategori: 'Guru Kelas' as Guru['kategori'],
     mataPelajaran: '',
     nipNuptk: '',
+    statusKepegawaian: 'PNS' as NonNullable<Guru['statusKepegawaian']>,
     pendidikan: 'S1 PGSD',
+    jenisKelamin: 'Laki-laki' as NonNullable<Guru['jenisKelamin']>,
+    tempatLahir: 'Musi Banyuasin',
+    tanggalLahir: '',
+    noTelepon: '',
+    email: '',
+    alamat: 'Desa Mulya Agung, Kec. Lalan',
+    urutan: guru.length + 1,
     foto: IMAGE_PRESETS[2].url,
   };
   const [form, setForm] = useState(emptyForm);
   const [editing, setEditing] = useState(false);
+  const [uploadingRowId, setUploadingRowId] = useState<number | null>(null);
+  const [uploadingForm, setUploadingForm] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+
+  const handleFormFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadError('');
+    setUploadingForm(true);
+    try {
+      const url = await uploadImageFile(token, file);
+      setForm((prev) => ({ ...prev, foto: url }));
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Gagal mengunggah foto.');
+    } finally {
+      setUploadingForm(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleRowPhotoUpload = async (
+    g: Guru,
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadError('');
+    setUploadingRowId(g.id);
+    try {
+      const uploadedUrl = await uploadImageFile(token, file);
+      const res = await fetch(`/api/admin/guru/${g.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ foto: uploadedUrl }),
+      });
+      if (!res.ok) {
+        throw new Error('Gagal menyimpan foto ke profil guru.');
+      }
+      if (editing && form.id === g.id) {
+        setForm((prev) => ({ ...prev, foto: uploadedUrl }));
+      }
+      onSaved(`Foto ${g.nama} berhasil diunggah & diperbarui.`);
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Gagal mengunggah foto.');
+    } finally {
+      setUploadingRowId(null);
+      e.target.value = '';
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setUploadError('');
     const url = editing ? `/api/admin/guru/${form.id}` : '/api/admin/guru';
     const method = editing ? 'PUT' : 'POST';
     const res = await fetch(url, {
@@ -819,9 +915,13 @@ const AdminGuruPanel: React.FC<{
       body: JSON.stringify(form),
     });
     if (res.ok) {
-      setForm(emptyForm);
+      setForm({ ...emptyForm, urutan: guru.length + 2 });
       setEditing(false);
-      onSaved(editing ? 'Data guru diperbarui.' : 'Guru baru berhasil ditambahkan.');
+      onSaved(
+        editing
+          ? 'Data lengkap guru/kepala sekolah diperbarui.'
+          : 'Guru/pegawai baru berhasil ditambahkan.'
+      );
     }
   };
 
@@ -837,74 +937,272 @@ const AdminGuruPanel: React.FC<{
     <div className="space-y-6">
       <form
         onSubmit={handleSubmit}
-        className="bg-white border border-slate-200 rounded-xl p-6 space-y-4"
+        className="bg-white border border-slate-200 rounded-xl p-6 space-y-5"
       >
-        <h2 className="font-display text-lg font-bold text-slate-900">
-          {editing ? 'Edit Data Guru / Staf' : 'Tambah Guru / Tenaga Kependidikan'}
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-          <input
-            type="text"
-            required
-            placeholder="Nama Lengkap & Gelar"
-            value={form.nama}
-            onChange={(e) => setForm({ ...form, nama: e.target.value })}
-            className="px-3 py-2 border border-slate-300 rounded-lg"
-          />
-          <input
-            type="text"
-            required
-            placeholder="Jabatan (mis. Guru Kelas II A)"
-            value={form.jabatan}
-            onChange={(e) => setForm({ ...form, jabatan: e.target.value })}
-            className="px-3 py-2 border border-slate-300 rounded-lg"
-          />
-          <select
-            value={form.kategori}
-            onChange={(e) =>
-              setForm({ ...form, kategori: e.target.value as Guru['kategori'] })
-            }
-            className="px-3 py-2 border border-slate-300 rounded-lg bg-white"
-          >
-            <option value="Kepala Sekolah">Kepala Sekolah</option>
-            <option value="Guru Kelas">Guru Kelas</option>
-            <option value="Guru Mata Pelajaran">Guru Mata Pelajaran</option>
-            <option value="Tenaga Kependidikan">Tenaga Kependidikan</option>
-          </select>
-          <input
-            type="text"
-            required
-            placeholder="Mata Pelajaran / Bidang"
-            value={form.mataPelajaran}
-            onChange={(e) => setForm({ ...form, mataPelajaran: e.target.value })}
-            className="px-3 py-2 border border-slate-300 rounded-lg"
-          />
-          <input
-            type="text"
-            placeholder="NIP / NUPTK"
-            value={form.nipNuptk}
-            onChange={(e) => setForm({ ...form, nipNuptk: e.target.value })}
-            className="px-3 py-2 border border-slate-300 rounded-lg font-mono"
-          />
-          <select
-            value={form.foto}
-            onChange={(e) => setForm({ ...form, foto: e.target.value })}
-            className="px-3 py-2 border border-slate-300 rounded-lg bg-white"
-          >
-            {IMAGE_PRESETS.map((p) => (
-              <option key={p.url} value={p.url}>
-                Foto: {p.label}
-              </option>
-            ))}
-          </select>
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3">
+          <h2 className="font-display text-lg font-bold text-slate-900">
+            {editing
+              ? 'Edit Data Lengkap Kepala Sekolah / Guru / Staf'
+              : 'Tambah Kepala Sekolah / Guru / Tenaga Kependidikan'}
+          </h2>
+          <span className="text-xs text-slate-500">
+            Lengkapi biodata dan unggah foto resmi
+          </span>
         </div>
+
+        {uploadError && (
+          <div className="bg-red-50 border border-red-200 text-red-800 text-xs rounded-lg px-3.5 py-2.5">
+            {uploadError}
+          </div>
+        )}
+
+        {/* Foto Preview + Upload di Form */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 bg-slate-50 border border-slate-200 rounded-xl">
+          <div className="w-20 h-20 rounded-xl overflow-hidden bg-slate-200 border border-slate-300 shrink-0">
+            <img
+              src={form.foto}
+              alt={form.nama || 'Pratinjau foto'}
+              className="w-full h-full object-cover object-top"
+            />
+          </div>
+          <div className="flex-1 space-y-2">
+            <p className="text-xs font-semibold text-slate-800">
+              Foto Profil (JPG, PNG, WEBP · Maks. 5 MB)
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <label className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-blue-700 hover:bg-blue-800 text-white text-xs font-semibold cursor-pointer transition-colors">
+                <Upload className="w-3.5 h-3.5" />
+                <span>{uploadingForm ? 'Mengunggah...' : 'Upload Foto dari Perangkat'}</span>
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  onChange={handleFormFileChange}
+                  disabled={uploadingForm}
+                  className="hidden"
+                />
+              </label>
+              <select
+                value={
+                  IMAGE_PRESETS.some((p) => p.url === form.foto) ? form.foto : ''
+                }
+                onChange={(e) => {
+                  if (e.target.value) setForm({ ...form, foto: e.target.value });
+                }}
+                className="px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white"
+              >
+                <option value="">Atau pilih foto bawaan...</option>
+                {IMAGE_PRESETS.map((p) => (
+                  <option key={p.url} value={p.url}>
+                    {p.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Nama Lengkap & Gelar *
+            </label>
+            <input
+              type="text"
+              required
+              placeholder="Contoh: Drs. H. Ahmad Fauzi, M.Pd."
+              value={form.nama}
+              onChange={(e) => setForm({ ...form, nama: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Jabatan *
+            </label>
+            <input
+              type="text"
+              required
+              placeholder="Contoh: Guru Kelas II A"
+              value={form.jabatan}
+              onChange={(e) => setForm({ ...form, jabatan: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Kategori *
+            </label>
+            <select
+              value={form.kategori}
+              onChange={(e) =>
+                setForm({ ...form, kategori: e.target.value as Guru['kategori'] })
+              }
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white"
+            >
+              <option value="Kepala Sekolah">Kepala Sekolah</option>
+              <option value="Guru Kelas">Guru Kelas</option>
+              <option value="Guru Mata Pelajaran">Guru Mata Pelajaran</option>
+              <option value="Tenaga Kependidikan">Tenaga Kependidikan</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Mata Pelajaran / Bidang Tugas *
+            </label>
+            <input
+              type="text"
+              required
+              placeholder="Contoh: Tematik / PJOK / Tata Usaha"
+              value={form.mataPelajaran}
+              onChange={(e) => setForm({ ...form, mataPelajaran: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              NIP / NUPTK
+            </label>
+            <input
+              type="text"
+              placeholder="NIP. ... / NUPTK. ..."
+              value={form.nipNuptk}
+              onChange={(e) => setForm({ ...form, nipNuptk: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Status Kepegawaian
+            </label>
+            <select
+              value={form.statusKepegawaian}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  statusKepegawaian: e.target.value as NonNullable<
+                    Guru['statusKepegawaian']
+                  >,
+                })
+              }
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white"
+            >
+              <option value="PNS">PNS</option>
+              <option value="PPPK">PPPK</option>
+              <option value="Guru Honorer">Guru Honorer</option>
+              <option value="Tenaga Honorer">Tenaga Honorer</option>
+              <option value="Lainnya">Lainnya</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Pendidikan Terakhir
+            </label>
+            <input
+              type="text"
+              placeholder="Contoh: S1 PGSD"
+              value={form.pendidikan}
+              onChange={(e) => setForm({ ...form, pendidikan: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Jenis Kelamin
+            </label>
+            <select
+              value={form.jenisKelamin}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  jenisKelamin: e.target.value as NonNullable<Guru['jenisKelamin']>,
+                })
+              }
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white"
+            >
+              <option value="Laki-laki">Laki-laki</option>
+              <option value="Perempuan">Perempuan</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Tempat Lahir
+            </label>
+            <input
+              type="text"
+              placeholder="Contoh: Musi Banyuasin"
+              value={form.tempatLahir}
+              onChange={(e) => setForm({ ...form, tempatLahir: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Tanggal Lahir
+            </label>
+            <input
+              type="date"
+              value={form.tanggalLahir}
+              onChange={(e) => setForm({ ...form, tanggalLahir: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              No. HP / WhatsApp
+            </label>
+            <input
+              type="tel"
+              placeholder="0812..."
+              value={form.noTelepon}
+              onChange={(e) => setForm({ ...form, noTelepon: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Email Sekolah / Pribadi
+            </label>
+            <input
+              type="email"
+              placeholder="nama@sdnmulyaagung.sch.id"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Alamat Tempat Tinggal
+            </label>
+            <input
+              type="text"
+              placeholder="Dusun, Desa Mulya Agung, Kec. Lalan"
+              value={form.alamat}
+              onChange={(e) => setForm({ ...form, alamat: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Urutan Tampil
+            </label>
+            <input
+              type="number"
+              min={1}
+              value={form.urutan}
+              onChange={(e) => setForm({ ...form, urutan: Number(e.target.value) })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono"
+            />
+          </div>
+        </div>
+
         <div className="flex gap-2">
           <button
             type="submit"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-700 text-white text-xs font-semibold hover:bg-blue-800"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-blue-700 text-white text-xs font-semibold hover:bg-blue-800"
           >
             <Plus className="w-4 h-4" />
-            <span>{editing ? 'Simpan Perubahan' : 'Tambah Data Guru'}</span>
+            <span>{editing ? 'Simpan Perubahan Data' : 'Tambah Data Guru'}</span>
           </button>
           {editing && (
             <button
@@ -913,62 +1211,139 @@ const AdminGuruPanel: React.FC<{
                 setForm(emptyForm);
                 setEditing(false);
               }}
-              className="px-4 py-2 rounded-lg border border-slate-300 text-xs font-semibold text-slate-700"
+              className="px-4 py-2.5 rounded-lg border border-slate-300 text-xs font-semibold text-slate-700"
             >
-              Batal
+              Batal Edit
             </button>
           )}
         </div>
       </form>
 
+      {/* Tabel Data Lengkap + Tombol Upload Foto di masing-masing nama */}
       <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+        <div className="p-4 border-b border-slate-200 flex items-center justify-between">
+          <div>
+            <h3 className="font-display text-base font-bold text-slate-900">
+              Daftar Kepala Sekolah, Guru & Tenaga Kependidikan ({guru.length})
+            </h3>
+            <p className="text-xs text-slate-500">
+              Gunakan tombol “Upload Foto” pada masing-masing nama untuk memperbarui foto profil secara langsung.
+            </p>
+          </div>
+        </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs sm:text-sm">
-            <thead className="bg-slate-50 border-b border-slate-200 text-xs text-slate-600">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-slate-50 border-b border-slate-200 text-slate-600">
               <tr>
-                <th className="py-3 px-4 font-semibold">Nama</th>
-                <th className="py-3 px-4 font-semibold">Jabatan</th>
-                <th className="py-3 px-4 font-semibold">Kategori</th>
-                <th className="py-3 px-4 font-semibold">NIP / NUPTK</th>
-                <th className="py-3 px-4 font-semibold text-right">Aksi</th>
+                <th className="py-3 px-4 font-semibold">Foto & Nama Lengkap</th>
+                <th className="py-3 px-4 font-semibold">Jabatan & Mapel</th>
+                <th className="py-3 px-4 font-semibold">NIP/NUPTK & Status</th>
+                <th className="py-3 px-4 font-semibold">Biodata & Kontak</th>
+                <th className="py-3 px-4 font-semibold text-right">Upload Foto & Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
               {guru.map((g) => (
-                <tr key={g.id} className="hover:bg-slate-50">
-                  <td className="py-3 px-4 font-semibold text-slate-900">{g.nama}</td>
-                  <td className="py-3 px-4 text-slate-600">{g.jabatan}</td>
-                  <td className="py-3 px-4 text-blue-700 font-medium">{g.kategori}</td>
-                  <td className="py-3 px-4 font-mono text-xs text-slate-500">{g.nipNuptk}</td>
-                  <td className="py-3 px-4 text-right space-x-2 whitespace-nowrap">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setForm({
-                          id: g.id,
-                          nama: g.nama,
-                          jabatan: g.jabatan,
-                          kategori: g.kategori,
-                          mataPelajaran: g.mataPelajaran,
-                          nipNuptk: g.nipNuptk,
-                          pendidikan: g.pendidikan,
-                          foto: g.foto,
-                        });
-                        setEditing(true);
-                      }}
-                      className="p-1.5 text-blue-700 hover:bg-blue-50 rounded"
-                      title="Edit"
-                    >
-                      <Edit3 className="w-4 h-4" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(g.id)}
-                      className="p-1.5 text-red-600 hover:bg-red-50 rounded"
-                      title="Hapus"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                <tr key={g.id} className="hover:bg-slate-50 align-top">
+                  <td className="py-3.5 px-4">
+                    <div className="flex items-start gap-3">
+                      <img
+                        src={g.foto}
+                        alt={g.nama}
+                        className="w-12 h-12 rounded-lg object-cover object-top border border-slate-200 bg-slate-100 shrink-0"
+                      />
+                      <div className="space-y-0.5">
+                        <p className="font-semibold text-slate-900 text-sm">{g.nama}</p>
+                        <p className="text-blue-700 font-medium">{g.kategori}</p>
+                        <p className="text-[11px] text-slate-500">
+                          Pendidikan: {g.pendidikan}
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="py-3.5 px-4 space-y-0.5">
+                    <p className="font-medium text-slate-800">{g.jabatan}</p>
+                    <p className="text-slate-500">{g.mataPelajaran}</p>
+                  </td>
+                  <td className="py-3.5 px-4 space-y-0.5">
+                    <p className="font-mono text-slate-800 tabular-nums">{g.nipNuptk}</p>
+                    <p className="font-semibold text-emerald-700">
+                      {g.statusKepegawaian || 'PNS'}
+                    </p>
+                  </td>
+                  <td className="py-3.5 px-4 space-y-0.5 text-slate-600">
+                    <p>
+                      {g.jenisKelamin || '-'} · {g.tempatLahir || '-'}
+                      {g.tanggalLahir && g.tanggalLahir !== '-'
+                        ? `, ${g.tanggalLahir}`
+                        : ''}
+                    </p>
+                    <p className="font-mono text-[11px] text-slate-700">
+                      {g.noTelepon || '-'}
+                      {g.email ? ` · ${g.email}` : ''}
+                    </p>
+                    <p className="text-[11px] text-slate-500 max-w-xs">{g.alamat || '-'}</p>
+                  </td>
+                  <td className="py-3.5 px-4 text-right whitespace-nowrap">
+                    <div className="inline-flex items-center gap-1.5">
+                      <label
+                        className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-semibold cursor-pointer transition-colors ${
+                          uploadingRowId === g.id
+                            ? 'bg-blue-50 border-blue-200 text-blue-700'
+                            : 'bg-white border-blue-300 text-blue-700 hover:bg-blue-50'
+                        }`}
+                        title={`Upload foto untuk ${g.nama}`}
+                      >
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>
+                          {uploadingRowId === g.id ? 'Mengunggah...' : 'Upload Foto'}
+                        </span>
+                        <input
+                          type="file"
+                          accept="image/png,image/jpeg,image/webp,image/gif"
+                          disabled={uploadingRowId === g.id}
+                          onChange={(e) => handleRowPhotoUpload(g, e)}
+                          className="hidden"
+                        />
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setForm({
+                            id: g.id,
+                            nama: g.nama,
+                            jabatan: g.jabatan,
+                            kategori: g.kategori,
+                            mataPelajaran: g.mataPelajaran,
+                            nipNuptk: g.nipNuptk,
+                            statusKepegawaian: g.statusKepegawaian || 'PNS',
+                            pendidikan: g.pendidikan,
+                            jenisKelamin: g.jenisKelamin || 'Laki-laki',
+                            tempatLahir: g.tempatLahir || 'Musi Banyuasin',
+                            tanggalLahir: g.tanggalLahir || '',
+                            noTelepon: g.noTelepon || '',
+                            email: g.email || '',
+                            alamat: g.alamat || '',
+                            urutan: g.urutan,
+                            foto: g.foto,
+                          });
+                          setEditing(true);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                        className="p-1.5 text-blue-700 hover:bg-blue-50 rounded"
+                        title="Edit data lengkap"
+                      >
+                        <Edit3 className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(g.id)}
+                        className="p-1.5 text-red-600 hover:bg-red-50 rounded"
+                        title="Hapus"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -988,52 +1363,197 @@ const AdminSiswaPanel: React.FC<{
 }> = ({ token, siswa, kelas, onSaved }) => {
   const [search, setSearch] = useState('');
   const [filterKelas, setFilterKelas] = useState<string>('Semua');
-  const emptyForm = {
+
+  const createEmptyForm = () => ({
     id: 0,
     nama: '',
     nis: '',
     nisn: '',
     kelasId: kelas[0]?.id || 1,
+    rombelDapodik: kelas[0]?.namaKelas || 'Kelas 1A',
     jenisKelamin: 'Laki-laki' as Siswa['jenisKelamin'],
     tempatLahir: 'Musi Banyuasin',
     tanggalLahir: '2016-05-01',
+    nik: '',
+    noKk: '',
+    noAktaLahir: '',
+    agama: 'Islam',
+    kewarganegaraan: 'WNI',
     alamat: 'Desa Mulya Agung, Kec. Lalan',
+    rt: '',
+    rw: '',
+    dusun: '',
+    kelurahan: 'Mulya Agung',
+    kecamatan: 'Kec. Lalan',
+    kodePos: '30758',
+    jenisTinggal: 'Bersama orang tua',
+    alatTransportasi: 'Jalan kaki',
+    noTelepon: '',
+    email: '',
+    penerimaKps: 'Tidak',
+    noKps: '',
+    penerimaKip: 'Tidak',
+    noKip: '',
+    namaDiKip: '',
+    noKks: '',
+    layakPip: 'Tidak',
+    alasanLayakPip: '',
+    kebutuhanKhusus: 'Tidak ada',
+    sekolahAsal: '',
+    anakKe: '',
+    jumlahSaudara: '',
+    beratBadan: '',
+    tinggiBadan: '',
+    lingkarKepala: '',
+    jarakSekolahKm: '',
+    namaAyah: '',
+    tahunLahirAyah: '',
+    pendidikanAyah: '',
+    pekerjaanAyah: '',
+    penghasilanAyah: '',
+    nikAyah: '',
+    namaIbu: '',
+    tahunLahirIbu: '',
+    pendidikanIbu: '',
+    pekerjaanIbu: '',
+    penghasilanIbu: '',
+    nikIbu: '',
+    namaWali: '',
+    tahunLahirWali: '',
+    pendidikanWali: '',
+    pekerjaanWali: '',
+    penghasilanWali: '',
+    nikWali: '',
     namaOrangTua: '',
     noHpOrangTua: '',
     statusSiswa: 'Aktif' as Siswa['statusSiswa'],
-  };
-  const [form, setForm] = useState(emptyForm);
+  });
+
+  const [form, setForm] = useState(createEmptyForm);
   const [editing, setEditing] = useState(false);
+  const [showDapodikFields, setShowDapodikFields] = useState(false);
+  const [detailSiswa, setDetailSiswa] = useState<Siswa | null>(null);
+
+  // Dapodik Excel Import states
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [parseResult, setParseResult] = useState<DapodikParseResult | null>(null);
+  const [parsingExcel, setParsingExcel] = useState(false);
+  const [importingExcel, setImportingExcel] = useState(false);
+  const [importMode, setImportMode] = useState<'upsert' | 'append_only' | 'replace'>('upsert');
+  const [importError, setImportError] = useState('');
 
   const kelasMap = new Map(kelas.map((k) => [k.id, k.namaKelas]));
 
   const filtered = siswa.filter((s) => {
     const matchKelas =
       filterKelas === 'Semua' || String(s.kelasId) === filterKelas;
+    const q = search.toLowerCase().trim();
     const matchQ =
-      !search.trim() ||
-      s.nama.toLowerCase().includes(search.toLowerCase()) ||
-      s.nis.includes(search) ||
-      s.nisn.includes(search);
+      !q ||
+      s.nama.toLowerCase().includes(q) ||
+      s.nis.toLowerCase().includes(q) ||
+      s.nisn.toLowerCase().includes(q) ||
+      (s.nik || '').toLowerCase().includes(q) ||
+      (s.namaAyah || '').toLowerCase().includes(q) ||
+      (s.namaIbu || '').toLowerCase().includes(q);
     return matchKelas && matchQ;
   });
+
+  const handleSelectDapodikFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImportError('');
+    setParsingExcel(true);
+    try {
+      const parsed = await parseDapodikExcelFile(file, kelas);
+      setUploadedFile(file);
+      setParseResult(parsed);
+    } catch (err) {
+      setParseResult(null);
+      setUploadedFile(null);
+      setImportError(
+        err instanceof Error
+          ? err.message
+          : 'Gagal membaca file Excel Dapodik. Pastikan format file valid (.xlsx/.xls).'
+      );
+    } finally {
+      setParsingExcel(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleChangeSheet = async (sheetName: string) => {
+    if (!uploadedFile) return;
+    setImportError('');
+    setParsingExcel(true);
+    try {
+      const parsed = await parseDapodikExcelFile(uploadedFile, kelas, sheetName);
+      setParseResult(parsed);
+    } catch (err) {
+      setImportError(
+        err instanceof Error ? err.message : 'Gagal membaca sheet Excel.'
+      );
+    } finally {
+      setParsingExcel(false);
+    }
+  };
+
+  const handleConfirmImport = async () => {
+    if (!parseResult || parseResult.rows.length === 0) return;
+    setImportError('');
+    setImportingExcel(true);
+    try {
+      const res = await fetch('/api/admin/siswa/import-dapodik', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          mode: importMode,
+          rows: parseResult.rows,
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        setImportError(json.error || 'Gagal mengimpor data Dapodik.');
+        return;
+      }
+      setParseResult(null);
+      setUploadedFile(null);
+      onSaved(
+        `Impor Dapodik selesai: ${json.importedCount} baru, ${json.updatedCount} diperbarui${
+          json.createdClassesCount > 0 ? `, ${json.createdClassesCount} kelas baru dibuat` : ''
+        }.`
+      );
+    } catch {
+      setImportError('Terjadi gangguan koneksi saat menyimpan hasil impor Dapodik.');
+    } finally {
+      setImportingExcel(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const url = editing ? `/api/admin/siswa/${form.id}` : '/api/admin/siswa';
     const method = editing ? 'PUT' : 'POST';
+    const payload = {
+      ...form,
+      namaOrangTua:
+        form.namaOrangTua || form.namaIbu || form.namaAyah || form.namaWali || '-',
+    };
     const res = await fetch(url, {
       method,
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(form),
+      body: JSON.stringify(payload),
     });
     if (res.ok) {
-      setForm(emptyForm);
+      setForm(createEmptyForm());
       setEditing(false);
-      onSaved(editing ? 'Data siswa diperbarui.' : 'Siswa baru berhasil ditambahkan.');
+      onSaved(editing ? 'Data lengkap siswa diperbarui.' : 'Siswa baru berhasil ditambahkan.');
     }
   };
 
@@ -1047,120 +1567,519 @@ const AdminSiswaPanel: React.FC<{
 
   return (
     <div className="space-y-6">
+      {/* Impor Excel Data Lengkap Download dari Dapodik */}
+      <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 text-blue-700">
+              <FileSpreadsheet className="w-5 h-5" />
+              <h2 className="font-display text-lg font-bold text-slate-900">
+                Impor Excel Data Lengkap Siswa dari Dapodik
+              </h2>
+            </div>
+            <p className="text-xs text-slate-600 max-w-2xl">
+              Unggah langsung file Excel <span className="font-semibold">Daftar Peserta Didik (.xlsx / .xls / .csv)</span> hasil unduhan dari aplikasi Dapodik. Sistem otomatis mengenali header bertingkat Dapodik (Identitas, NIK, No. KK, Alamat RT/RW, KIP/PIP, Data Ayah, Data Ibu, Data Wali, & Rombel Saat Ini).
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <label className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold cursor-pointer transition-colors">
+              <Upload className="w-4 h-4" />
+              <span>{parsingExcel ? 'Membaca Excel...' : 'Pilih File Excel Dapodik'}</span>
+              <input
+                type="file"
+                accept=".xlsx,.xls,.csv"
+                onChange={handleSelectDapodikFile}
+                disabled={parsingExcel}
+                className="hidden"
+              />
+            </label>
+            <button
+              type="button"
+              onClick={downloadTemplateDapodikXlsx}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold"
+            >
+              <Download className="w-4 h-4 text-blue-700" />
+              <span>Template Dapodik (.xlsx)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => exportSiswaDapodikXlsx(siswa, kelas)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold"
+            >
+              <FileSpreadsheet className="w-4 h-4 text-emerald-700" />
+              <span>Export Excel ({siswa.length})</span>
+            </button>
+          </div>
+        </div>
+
+        {importError && (
+          <div className="bg-red-50 border border-red-200 text-red-800 text-xs rounded-lg px-4 py-3">
+            {importError}
+          </div>
+        )}
+
+        {parseResult && (
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-4">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+              <div className="space-y-1">
+                <p className="text-sm font-bold text-slate-900">
+                  Pratinjau File: {uploadedFile?.name}
+                </p>
+                <p className="text-xs text-slate-600">
+                  Terdeteksi <span className="font-semibold text-emerald-700">{parseResult.rows.length} siswa</span> ·{' '}
+                  Header di baris ke-{parseResult.detectedHeaderRow} ·{' '}
+                  <span className="font-semibold">{parseResult.mappedColumns.length} kolom Dapodik</span> terbaca
+                  {parseResult.skippedRows > 0 ? ` · ${parseResult.skippedRows} baris kosong/judul dilewati` : ''}
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                {parseResult.sheetNames.length > 1 && (
+                  <select
+                    value={parseResult.selectedSheet}
+                    onChange={(e) => handleChangeSheet(e.target.value)}
+                    className="px-3 py-1.5 text-xs border border-slate-300 rounded-lg bg-white"
+                  >
+                    {parseResult.sheetNames.map((sn) => (
+                      <option key={sn} value={sn}>
+                        Sheet: {sn}
+                      </option>
+                    ))}
+                  </select>
+                )}
+                <select
+                  value={importMode}
+                  onChange={(e) =>
+                    setImportMode(e.target.value as 'upsert' | 'append_only' | 'replace')
+                  }
+                  className="px-3 py-1.5 text-xs border border-slate-300 rounded-lg bg-white"
+                >
+                  <option value="upsert">Mode: Perbarui NISN/NIS yang ada & Tambah Baru</option>
+                  <option value="append_only">Mode: Hanya Tambah Siswa Baru (Lewati Duplikat)</option>
+                  <option value="replace">Mode: Ganti Seluruh Data Siswa dengan File Ini</option>
+                </select>
+              </div>
+            </div>
+
+            {parseResult.warnings.length > 0 && (
+              <div className="bg-amber-50 border border-amber-200 text-amber-900 text-xs rounded-lg px-3.5 py-2.5 space-y-1">
+                {parseResult.warnings.map((w, i) => (
+                  <p key={i}>• {w}</p>
+                ))}
+              </div>
+            )}
+
+            <div className="overflow-x-auto bg-white border border-slate-200 rounded-lg max-h-72">
+              <table className="w-full text-left text-[11px]">
+                <thead className="bg-slate-100 border-b border-slate-200 text-slate-700 sticky top-0">
+                  <tr>
+                    <th className="py-2 px-3 font-semibold">No</th>
+                    <th className="py-2 px-3 font-semibold">Nama Lengkap & Agama</th>
+                    <th className="py-2 px-3 font-semibold">NIPD / NISN / NIK</th>
+                    <th className="py-2 px-3 font-semibold">Rombel</th>
+                    <th className="py-2 px-3 font-semibold">JK · TTL</th>
+                    <th className="py-2 px-3 font-semibold">Alamat Domisili</th>
+                    <th className="py-2 px-3 font-semibold">Data Ayah & Ibu</th>
+                    <th className="py-2 px-3 font-semibold">KIP / Asal Sekolah</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200">
+                  {parseResult.rows.slice(0, 30).map((r, idx) => (
+                    <tr key={`${r.nisn}-${r.nis}-${idx}`} className="hover:bg-slate-50">
+                      <td className="py-2 px-3 font-mono text-slate-500">{idx + 1}</td>
+                      <td className="py-2 px-3">
+                        <p className="font-semibold text-slate-900">{r.nama}</p>
+                        <p className="text-slate-500">{r.agama || 'Islam'}</p>
+                      </td>
+                      <td className="py-2 px-3 font-mono tabular-nums">
+                        <p>NIPD: {r.nis}</p>
+                        <p>NISN: {r.nisn}</p>
+                        {r.nik && <p className="text-slate-500">NIK: {r.nik}</p>}
+                      </td>
+                      <td className="py-2 px-3 font-semibold text-blue-700">
+                        {r.rombelDapodik}
+                      </td>
+                      <td className="py-2 px-3 text-slate-700">
+                        <p>{r.jenisKelamin}</p>
+                        <p className="text-slate-500">
+                          {r.tempatLahir}, {r.tanggalLahir}
+                        </p>
+                      </td>
+                      <td className="py-2 px-3 text-slate-600 max-w-[200px]">
+                        <p className="line-clamp-2">{r.alamat}</p>
+                        {r.noHpOrangTua !== '-' && (
+                          <p className="font-mono text-slate-700">{r.noHpOrangTua}</p>
+                        )}
+                      </td>
+                      <td className="py-2 px-3 text-slate-700">
+                        <p>Ayah: {r.namaAyah || '-'}</p>
+                        <p>Ibu: {r.namaIbu || '-'}</p>
+                        {r.namaWali && <p className="text-slate-500">Wali: {r.namaWali}</p>}
+                      </td>
+                      <td className="py-2 px-3 text-slate-600">
+                        <p>KIP: {r.penerimaKip || '-'}</p>
+                        <p className="text-slate-500">{r.sekolahAsal || '-'}</p>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {parseResult.rows.length > 30 && (
+              <p className="text-[11px] text-slate-500">
+                Menampilkan 30 siswa pertama dari total {parseResult.rows.length} siswa siap diimpor.
+              </p>
+            )}
+
+            <div className="flex flex-wrap items-center justify-end gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => {
+                  setParseResult(null);
+                  setUploadedFile(null);
+                }}
+                className="px-4 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-100"
+              >
+                Batal Pratinjau
+              </button>
+              <button
+                type="button"
+                disabled={importingExcel || parseResult.rows.length === 0}
+                onClick={handleConfirmImport}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-700 hover:bg-blue-800 disabled:opacity-60 text-white text-xs font-semibold"
+              >
+                <Check className="w-4 h-4" />
+                <span>
+                  {importingExcel
+                    ? 'Mengimpor ke Database...'
+                    : `Konfirmasi & Impor ${parseResult.rows.length} Siswa Dapodik`}
+                </span>
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Form Tambah / Edit Biodata Siswa Lengkap */}
       <form
         onSubmit={handleSubmit}
         className="bg-white border border-slate-200 rounded-xl p-6 space-y-4"
       >
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="font-display text-lg font-bold text-slate-900">
-            {editing ? 'Edit Biodata Siswa' : 'Tambah Siswa Baru (Data Terproteksi Admin)'}
+            {editing ? 'Edit Biodata Lengkap Siswa' : 'Tambah Siswa Baru (Data Terproteksi Admin)'}
           </h2>
-          <span className="text-xs text-slate-500 flex items-center gap-1">
-            <Shield className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Tidak tampil publik</span>
-          </span>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setShowDapodikFields((v) => !v)}
+              className="text-xs font-semibold text-blue-700 hover:underline"
+            >
+              {showDapodikFields
+                ? 'Sembunyikan Kolom Tambahan Dapodik'
+                : 'Tampilkan Semua Kolom Lengkap Dapodik (NIK, KK, Ayah/Ibu, KIP)'}
+            </button>
+            <span className="text-xs text-slate-500 flex items-center gap-1">
+              <Shield className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Tidak tampil publik</span>
+            </span>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-          <input
-            type="text"
-            required
-            placeholder="Nama Lengkap Siswa"
-            value={form.nama}
-            onChange={(e) => setForm({ ...form, nama: e.target.value })}
-            className="px-3 py-2 border border-slate-300 rounded-lg"
-          />
-          <input
-            type="text"
-            required
-            placeholder="NIS"
-            value={form.nis}
-            onChange={(e) => setForm({ ...form, nis: e.target.value })}
-            className="px-3 py-2 border border-slate-300 rounded-lg font-mono"
-          />
-          <input
-            type="text"
-            required
-            placeholder="NISN"
-            value={form.nisn}
-            onChange={(e) => setForm({ ...form, nisn: e.target.value })}
-            className="px-3 py-2 border border-slate-300 rounded-lg font-mono"
-          />
-          <select
-            value={form.kelasId}
-            onChange={(e) => setForm({ ...form, kelasId: Number(e.target.value) })}
-            className="px-3 py-2 border border-slate-300 rounded-lg bg-white"
-          >
-            {kelas.map((k) => (
-              <option key={k.id} value={k.id}>
-                {k.namaKelas}
-              </option>
-            ))}
-          </select>
-          <select
-            value={form.jenisKelamin}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                jenisKelamin: e.target.value as Siswa['jenisKelamin'],
-              })
-            }
-            className="px-3 py-2 border border-slate-300 rounded-lg bg-white"
-          >
-            <option value="Laki-laki">Laki-laki</option>
-            <option value="Perempuan">Perempuan</option>
-          </select>
-          <select
-            value={form.statusSiswa}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                statusSiswa: e.target.value as Siswa['statusSiswa'],
-              })
-            }
-            className="px-3 py-2 border border-slate-300 rounded-lg bg-white"
-          >
-            <option value="Aktif">Status: Aktif</option>
-            <option value="Lulus">Status: Lulus</option>
-            <option value="Pindah">Status: Pindah</option>
-            <option value="Cuti">Status: Cuti</option>
-          </select>
-          <input
-            type="text"
-            placeholder="Tempat Lahir"
-            value={form.tempatLahir}
-            onChange={(e) => setForm({ ...form, tempatLahir: e.target.value })}
-            className="px-3 py-2 border border-slate-300 rounded-lg"
-          />
-          <input
-            type="date"
-            value={form.tanggalLahir}
-            onChange={(e) => setForm({ ...form, tanggalLahir: e.target.value })}
-            className="px-3 py-2 border border-slate-300 rounded-lg"
-          />
-          <input
-            type="text"
-            placeholder="Alamat Lengkap"
-            value={form.alamat}
-            onChange={(e) => setForm({ ...form, alamat: e.target.value })}
-            className="px-3 py-2 border border-slate-300 rounded-lg"
-          />
-          <input
-            type="text"
-            required
-            placeholder="Nama Orang Tua / Wali"
-            value={form.namaOrangTua}
-            onChange={(e) => setForm({ ...form, namaOrangTua: e.target.value })}
-            className="px-3 py-2 border border-slate-300 rounded-lg"
-          />
-          <input
-            type="text"
-            placeholder="No. HP Orang Tua / Wali"
-            value={form.noHpOrangTua}
-            onChange={(e) => setForm({ ...form, noHpOrangTua: e.target.value })}
-            className="px-3 py-2 border border-slate-300 rounded-lg font-mono"
-          />
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Nama Lengkap Siswa *
+            </label>
+            <input
+              type="text"
+              required
+              placeholder="Nama Lengkap Siswa"
+              value={form.nama}
+              onChange={(e) => setForm({ ...form, nama: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              NIS / NIPD *
+            </label>
+            <input
+              type="text"
+              required
+              placeholder="NIS / NIPD"
+              value={form.nis}
+              onChange={(e) => setForm({ ...form, nis: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              NISN *
+            </label>
+            <input
+              type="text"
+              required
+              placeholder="NISN"
+              value={form.nisn}
+              onChange={(e) => setForm({ ...form, nisn: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Kelas / Rombel
+            </label>
+            <select
+              value={form.kelasId}
+              onChange={(e) => {
+                const nextId = Number(e.target.value);
+                setForm({
+                  ...form,
+                  kelasId: nextId,
+                  rombelDapodik: kelasMap.get(nextId) || form.rombelDapodik,
+                });
+              }}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white"
+            >
+              {kelas.map((k) => (
+                <option key={k.id} value={k.id}>
+                  {k.namaKelas}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Jenis Kelamin
+            </label>
+            <select
+              value={form.jenisKelamin}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  jenisKelamin: e.target.value as Siswa['jenisKelamin'],
+                })
+              }
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white"
+            >
+              <option value="Laki-laki">Laki-laki</option>
+              <option value="Perempuan">Perempuan</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Status Siswa
+            </label>
+            <select
+              value={form.statusSiswa}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  statusSiswa: e.target.value as Siswa['statusSiswa'],
+                })
+              }
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white"
+            >
+              <option value="Aktif">Status: Aktif</option>
+              <option value="Lulus">Status: Lulus</option>
+              <option value="Pindah">Status: Pindah</option>
+              <option value="Cuti">Status: Cuti</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Tempat Lahir
+            </label>
+            <input
+              type="text"
+              placeholder="Tempat Lahir"
+              value={form.tempatLahir}
+              onChange={(e) => setForm({ ...form, tempatLahir: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Tanggal Lahir
+            </label>
+            <input
+              type="date"
+              value={form.tanggalLahir}
+              onChange={(e) => setForm({ ...form, tanggalLahir: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Alamat Lengkap
+            </label>
+            <input
+              type="text"
+              placeholder="Alamat Lengkap"
+              value={form.alamat}
+              onChange={(e) => setForm({ ...form, alamat: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Nama Orang Tua / Wali *
+            </label>
+            <input
+              type="text"
+              required
+              placeholder="Nama Orang Tua / Wali"
+              value={form.namaOrangTua}
+              onChange={(e) => setForm({ ...form, namaOrangTua: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              No. HP Orang Tua / Wali
+            </label>
+            <input
+              type="text"
+              placeholder="No. HP Orang Tua / Wali"
+              value={form.noHpOrangTua}
+              onChange={(e) => setForm({ ...form, noHpOrangTua: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              NIK Siswa
+            </label>
+            <input
+              type="text"
+              placeholder="16 digit NIK"
+              value={form.nik}
+              onChange={(e) => setForm({ ...form, nik: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono"
+            />
+          </div>
         </div>
+
+        {(showDapodikFields || editing) && (
+          <div className="pt-3 border-t border-slate-200 space-y-4">
+            <p className="text-xs font-bold text-slate-800 uppercase tracking-wide">
+              Data Lengkap Dapodik (Kependudukan, Orang Tua/Wali & KIP)
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">No. KK</label>
+                <input
+                  type="text"
+                  value={form.noKk}
+                  onChange={(e) => setForm({ ...form, noKk: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono"
+                />
+              </div>
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">No. Akta Lahir</label>
+                <input
+                  type="text"
+                  value={form.noAktaLahir}
+                  onChange={(e) => setForm({ ...form, noAktaLahir: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono"
+                />
+              </div>
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">Agama</label>
+                <input
+                  type="text"
+                  value={form.agama}
+                  onChange={(e) => setForm({ ...form, agama: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">Sekolah Asal (TK/PAUD)</label>
+                <input
+                  type="text"
+                  value={form.sekolahAsal}
+                  onChange={(e) => setForm({ ...form, sekolahAsal: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">Dusun / RT / RW</label>
+                <input
+                  type="text"
+                  placeholder="Dusun"
+                  value={form.dusun}
+                  onChange={(e) => setForm({ ...form, dusun: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">Jenis Tinggal</label>
+                <input
+                  type="text"
+                  value={form.jenisTinggal}
+                  onChange={(e) => setForm({ ...form, jenisTinggal: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">Transportasi</label>
+                <input
+                  type="text"
+                  value={form.alatTransportasi}
+                  onChange={(e) => setForm({ ...form, alatTransportasi: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">Penerima KIP</label>
+                <select
+                  value={form.penerimaKip}
+                  onChange={(e) => setForm({ ...form, penerimaKip: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white"
+                >
+                  <option value="Tidak">Tidak</option>
+                  <option value="Ya">Ya</option>
+                </select>
+              </div>
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">Nama Ayah</label>
+                <input
+                  type="text"
+                  value={form.namaAyah}
+                  onChange={(e) => setForm({ ...form, namaAyah: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">Pekerjaan Ayah</label>
+                <input
+                  type="text"
+                  value={form.pekerjaanAyah}
+                  onChange={(e) => setForm({ ...form, pekerjaanAyah: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">Nama Ibu Kandung</label>
+                <input
+                  type="text"
+                  value={form.namaIbu}
+                  onChange={(e) => setForm({ ...form, namaIbu: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">Pekerjaan Ibu</label>
+                <input
+                  type="text"
+                  value={form.pekerjaanIbu}
+                  onChange={(e) => setForm({ ...form, pekerjaanIbu: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                />
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="flex gap-2">
           <button
@@ -1174,7 +2093,7 @@ const AdminSiswaPanel: React.FC<{
             <button
               type="button"
               onClick={() => {
-                setForm(emptyForm);
+                setForm(createEmptyForm());
                 setEditing(false);
               }}
               className="px-4 py-2 rounded-lg border border-slate-300 text-xs font-semibold text-slate-700"
@@ -1194,7 +2113,7 @@ const AdminSiswaPanel: React.FC<{
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Cari nama, NIS, atau NISN..."
+              placeholder="Cari nama, NIS, NISN, NIK, atau orang tua..."
               className="w-full pl-9 pr-3 py-1.5 text-xs border border-slate-300 rounded-lg"
             />
           </div>
@@ -1203,7 +2122,7 @@ const AdminSiswaPanel: React.FC<{
             onChange={(e) => setFilterKelas(e.target.value)}
             className="px-3 py-1.5 text-xs border border-slate-300 rounded-lg bg-white"
           >
-            <option value="Semua">Semua Kelas</option>
+            <option value="Semua">Semua Kelas ({siswa.length} siswa)</option>
             {kelas.map((k) => (
               <option key={k.id} value={String(k.id)}>
                 {k.namaKelas}
@@ -1217,10 +2136,10 @@ const AdminSiswaPanel: React.FC<{
             <thead className="bg-slate-50 border-b border-slate-200 text-slate-600">
               <tr>
                 <th className="py-3 px-4 font-semibold">Nama Siswa</th>
-                <th className="py-3 px-4 font-semibold">NIS / NISN</th>
+                <th className="py-3 px-4 font-semibold">NIS / NISN / NIK</th>
                 <th className="py-3 px-4 font-semibold">Kelas</th>
-                <th className="py-3 px-4 font-semibold">L/P · TTL</th>
-                <th className="py-3 px-4 font-semibold">Orang Tua / Wali</th>
+                <th className="py-3 px-4 font-semibold">L/P · TTL · Agama</th>
+                <th className="py-3 px-4 font-semibold">Orang Tua (Ayah / Ibu)</th>
                 <th className="py-3 px-4 font-semibold">Status</th>
                 <th className="py-3 px-4 font-semibold text-right">Aksi</th>
               </tr>
@@ -1229,35 +2148,59 @@ const AdminSiswaPanel: React.FC<{
               {filtered.map((s) => (
                 <tr key={s.id} className="hover:bg-slate-50">
                   <td className="py-3 px-4 font-semibold text-slate-900">
-                    {s.nama}
-                    <div className="font-normal text-[11px] text-slate-500">{s.alamat}</div>
+                    <div>{s.nama}</div>
+                    <div className="font-normal text-[11px] text-slate-500 max-w-xs">
+                      {s.alamat}
+                    </div>
                   </td>
                   <td className="py-3 px-4 font-mono tabular-nums">
-                    <div>{s.nis}</div>
-                    <div className="text-slate-500">{s.nisn}</div>
+                    <div>NIS: {s.nis}</div>
+                    <div className="text-slate-600">NISN: {s.nisn}</div>
+                    {s.nik && <div className="text-[11px] text-slate-500">NIK: {s.nik}</div>}
                   </td>
                   <td className="py-3 px-4 font-medium text-blue-700">
-                    {kelasMap.get(s.kelasId) || '-'}
+                    {kelasMap.get(s.kelasId) || s.rombelDapodik || '-'}
                   </td>
                   <td className="py-3 px-4 text-slate-600">
-                    <div>{s.jenisKelamin}</div>
+                    <div>
+                      {s.jenisKelamin} · {s.agama || 'Islam'}
+                    </div>
                     <div className="text-[11px] text-slate-500">
                       {s.tempatLahir}, {s.tanggalLahir}
                     </div>
                   </td>
                   <td className="py-3 px-4 text-slate-700">
-                    <div>{s.namaOrangTua}</div>
+                    <div>
+                      {s.namaAyah || s.namaIbu
+                        ? `${s.namaAyah || '-'} / ${s.namaIbu || '-'}`
+                        : s.namaOrangTua}
+                    </div>
                     <div className="font-mono text-[11px] text-slate-500">{s.noHpOrangTua}</div>
                   </td>
-                  <td className="py-3 px-4 font-semibold text-emerald-700">{s.statusSiswa}</td>
+                  <td className="py-3 px-4">
+                    <div className="font-semibold text-emerald-700">{s.statusSiswa}</div>
+                    {s.penerimaKip === 'Ya' && (
+                      <div className="text-[11px] font-semibold text-blue-700">Penerima KIP</div>
+                    )}
+                  </td>
                   <td className="py-3 px-4 text-right space-x-1 whitespace-nowrap">
                     <button
                       type="button"
+                      onClick={() => setDetailSiswa(s)}
+                      className="p-1.5 text-slate-700 hover:bg-slate-100 rounded"
+                      title="Lihat Detail Lengkap Dapodik"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => {
-                        setForm(s);
+                        setForm({ ...createEmptyForm(), ...s });
                         setEditing(true);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
                       className="p-1.5 text-blue-700 hover:bg-blue-50 rounded"
+                      title="Edit Biodata Siswa"
                     >
                       <Edit3 className="w-4 h-4" />
                     </button>
@@ -1265,6 +2208,7 @@ const AdminSiswaPanel: React.FC<{
                       type="button"
                       onClick={() => handleDelete(s.id)}
                       className="p-1.5 text-red-600 hover:bg-red-50 rounded"
+                      title="Hapus"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -1275,6 +2219,88 @@ const AdminSiswaPanel: React.FC<{
           </table>
         </div>
       </div>
+
+      {/* Modal Detail Lengkap Dapodik */}
+      {detailSiswa && (
+        <div className="fixed inset-0 z-50 bg-slate-900/50 flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-3xl w-full max-h-[85vh] overflow-y-auto p-6 space-y-5 shadow-xl">
+            <div className="flex items-start justify-between border-b border-slate-200 pb-4">
+              <div>
+                <p className="text-xs font-semibold text-blue-700">
+                  Data Lengkap Peserta Didik (Format Dapodik)
+                </p>
+                <h3 className="font-display text-xl font-bold text-slate-900">
+                  {detailSiswa.nama}
+                </h3>
+                <p className="text-xs text-slate-500 font-mono">
+                  NIS/NIPD: {detailSiswa.nis} · NISN: {detailSiswa.nisn} · Kelas:{' '}
+                  {kelasMap.get(detailSiswa.kelasId) || detailSiswa.rombelDapodik || '-'}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setDetailSiswa(null)}
+                className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1.5">
+                <p className="font-bold text-slate-900 mb-2">1. Identitas & Kependudukan</p>
+                <p>NIK: <span className="font-mono">{detailSiswa.nik || '-'}</span></p>
+                <p>No. KK: <span className="font-mono">{detailSiswa.noKk || '-'}</span></p>
+                <p>No. Akta Lahir: <span className="font-mono">{detailSiswa.noAktaLahir || '-'}</span></p>
+                <p>Jenis Kelamin: {detailSiswa.jenisKelamin}</p>
+                <p>TTL: {detailSiswa.tempatLahir}, {detailSiswa.tanggalLahir}</p>
+                <p>Agama: {detailSiswa.agama || 'Islam'}</p>
+                <p>Kewarganegaraan: {detailSiswa.kewarganegaraan || 'WNI'}</p>
+                <p>Kebutuhan Khusus: {detailSiswa.kebutuhanKhusus || 'Tidak ada'}</p>
+                <p>Sekolah Asal: {detailSiswa.sekolahAsal || '-'}</p>
+              </div>
+
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1.5">
+                <p className="font-bold text-slate-900 mb-2">2. Alamat, Kontak & Kesejahteraan</p>
+                <p>Alamat: {detailSiswa.alamat}</p>
+                <p>RT/RW: {detailSiswa.rt || '-'} / {detailSiswa.rw || '-'}</p>
+                <p>Dusun/Kel/Kec: {detailSiswa.dusun || '-'} · {detailSiswa.kelurahan || '-'} · {detailSiswa.kecamatan || '-'}</p>
+                <p>Kode Pos: {detailSiswa.kodePos || '-'}</p>
+                <p>Jenis Tinggal: {detailSiswa.jenisTinggal || '-'}</p>
+                <p>Transportasi: {detailSiswa.alatTransportasi || '-'}</p>
+                <p>No. HP/WA: <span className="font-mono">{detailSiswa.noHpOrangTua}</span></p>
+                <p>Penerima KIP / No. KIP: {detailSiswa.penerimaKip || 'Tidak'} {detailSiswa.noKip ? `(${detailSiswa.noKip})` : ''}</p>
+                <p>Layak PIP / KPS: {detailSiswa.layakPip || 'Tidak'} / {detailSiswa.penerimaKps || 'Tidak'}</p>
+                <p>BB / TB / Jarak: {detailSiswa.beratBadan || '-'} kg / {detailSiswa.tinggiBadan || '-'} cm / {detailSiswa.jarakSekolahKm || '-'} km</p>
+              </div>
+
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1.5">
+                <p className="font-bold text-slate-900 mb-2">3. Data Ayah Kandung</p>
+                <p>Nama Ayah: {detailSiswa.namaAyah || detailSiswa.namaOrangTua || '-'}</p>
+                <p>NIK Ayah: <span className="font-mono">{detailSiswa.nikAyah || '-'}</span></p>
+                <p>Tahun Lahir: {detailSiswa.tahunLahirAyah || '-'}</p>
+                <p>Pendidikan: {detailSiswa.pendidikanAyah || '-'}</p>
+                <p>Pekerjaan: {detailSiswa.pekerjaanAyah || '-'}</p>
+                <p>Penghasilan: {detailSiswa.penghasilanAyah || '-'}</p>
+              </div>
+
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1.5">
+                <p className="font-bold text-slate-900 mb-2">4. Data Ibu Kandung & Wali</p>
+                <p>Nama Ibu: {detailSiswa.namaIbu || '-'}</p>
+                <p>NIK Ibu: <span className="font-mono">{detailSiswa.nikIbu || '-'}</span></p>
+                <p>Tahun Lahir: {detailSiswa.tahunLahirIbu || '-'}</p>
+                <p>Pendidikan / Pekerjaan: {detailSiswa.pendidikanIbu || '-'} / {detailSiswa.pekerjaanIbu || '-'}</p>
+                <p>Penghasilan Ibu: {detailSiswa.penghasilanIbu || '-'}</p>
+                {detailSiswa.namaWali && (
+                  <p className="pt-1 border-t border-slate-200">
+                    Wali: {detailSiswa.namaWali} ({detailSiswa.pekerjaanWali || '-'})
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

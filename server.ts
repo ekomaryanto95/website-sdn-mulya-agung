@@ -70,7 +70,13 @@ function buildPublicBootstrap(db: DatabaseState): PublicBootstrapData {
 
 async function startServer() {
   const app = express();
-  app.use(express.json({ limit: '5mb' }));
+  app.use(express.json({ limit: '10mb' }));
+
+  const uploadsDir = path.resolve(process.cwd(), 'data', 'uploads');
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+  app.use('/uploads', express.static(uploadsDir));
 
   // --- PUBLIC ROUTES ---
   app.get('/api/public/bootstrap', (_req, res) => {
@@ -385,6 +391,33 @@ async function startServer() {
     res.json(db.sekolah);
   });
 
+  // Upload Foto Admin
+  app.post('/api/admin/upload-foto', requireAdminAuth, (req, res) => {
+    const dataUrl = String(req.body?.dataUrl || '');
+    const originalName = String(req.body?.filename || 'foto.jpg');
+    const match = /^data:image\/(png|jpeg|jpg|webp|gif);base64,([A-Za-z0-9+/=]+)$/.exec(
+      dataUrl
+    );
+    if (!match) {
+      res.status(400).json({
+        error: 'Format gambar tidak didukung. Gunakan file JPG, PNG, atau WEBP.',
+      });
+      return;
+    }
+    const ext = match[1] === 'jpeg' ? 'jpg' : match[1];
+    const buffer = Buffer.from(match[2], 'base64');
+    if (buffer.length > 5 * 1024 * 1024) {
+      res.status(400).json({ error: 'Ukuran gambar maksimal 5 MB.' });
+      return;
+    }
+    const safeBase =
+      slugify(path.basename(originalName, path.extname(originalName))) || 'foto';
+    const fileName = `${Date.now()}-${safeBase}.${ext}`;
+    const targetPath = path.join(uploadsDir, fileName);
+    fs.writeFileSync(targetPath, buffer);
+    res.status(201).json({ url: `/uploads/${fileName}` });
+  });
+
   // Guru CRUD
   app.post('/api/admin/guru', requireAdminAuth, (req, res) => {
     const db = getDb();
@@ -400,7 +433,13 @@ async function startServer() {
       kategori: b.kategori || 'Guru Kelas',
       mataPelajaran: String(b.mataPelajaran || 'Tematik').trim(),
       nipNuptk: String(b.nipNuptk || '-').trim(),
+      statusKepegawaian: b.statusKepegawaian || 'PNS',
       pendidikan: String(b.pendidikan || 'S1').trim(),
+      jenisKelamin: b.jenisKelamin === 'Perempuan' ? ('Perempuan' as const) : ('Laki-laki' as const),
+      tempatLahir: String(b.tempatLahir || 'Musi Banyuasin').trim(),
+      tanggalLahir: String(b.tanggalLahir || '').trim(),
+      noTelepon: String(b.noTelepon || '').trim(),
+      alamat: String(b.alamat || '').trim(),
       foto: String(b.foto || db.sekolah.kepalaSekolahFoto).trim(),
       email: String(b.email || '').trim(),
       urutan: Number(b.urutan || db.guru.length + 1),
@@ -419,6 +458,10 @@ async function startServer() {
       return;
     }
     db.guru[idx] = { ...db.guru[idx], ...req.body, id };
+    if (db.guru[idx].kategori === 'Kepala Sekolah' && req.body?.foto) {
+      db.sekolah.kepalaSekolahFoto = String(req.body.foto);
+      db.sekolah.kepalaSekolahNama = db.guru[idx].nama;
+    }
     saveDb(db);
     res.json(db.guru[idx]);
   });
@@ -464,6 +507,132 @@ async function startServer() {
     res.json(db.kelas[idx]);
   });
 
+  function normalizeSiswaPayload(
+    b: Record<string, unknown>,
+    fallbackKelasId: number
+  ): Omit<import('./src/types/school.ts').Siswa, 'id'> {
+    const str = (key: string, def = '') => String(b[key] ?? def).trim();
+    const namaIbu = str('namaIbu');
+    const namaAyah = str('namaAyah');
+    const namaWali = str('namaWali');
+    const namaOrangTua =
+      str('namaOrangTua') || namaIbu || namaAyah || namaWali || '-';
+    const noHpOrangTua = str('noHpOrangTua') || str('noTelepon') || '-';
+    const statusRaw = str('statusSiswa', 'Aktif');
+    const statusSiswa: 'Aktif' | 'Lulus' | 'Pindah' | 'Cuti' =
+      statusRaw === 'Lulus' || statusRaw === 'Pindah' || statusRaw === 'Cuti'
+        ? statusRaw
+        : 'Aktif';
+
+    return {
+      nama: str('nama'),
+      nis: str('nis'),
+      nisn: str('nisn', '-'),
+      kelasId: Number(b.kelasId || fallbackKelasId || 1),
+      rombelDapodik: str('rombelDapodik'),
+      jenisKelamin:
+        str('jenisKelamin') === 'Perempuan' ? ('Perempuan' as const) : ('Laki-laki' as const),
+      tempatLahir: str('tempatLahir', 'Musi Banyuasin'),
+      tanggalLahir: str('tanggalLahir', '2016-01-01'),
+      nik: str('nik'),
+      noKk: str('noKk'),
+      noAktaLahir: str('noAktaLahir'),
+      agama: str('agama', 'Islam'),
+      kewarganegaraan: str('kewarganegaraan', 'WNI'),
+      alamat: str('alamat', 'Desa Mulya Agung, Kec. Lalan'),
+      rt: str('rt'),
+      rw: str('rw'),
+      dusun: str('dusun'),
+      kelurahan: str('kelurahan'),
+      kecamatan: str('kecamatan'),
+      kodePos: str('kodePos'),
+      jenisTinggal: str('jenisTinggal'),
+      alatTransportasi: str('alatTransportasi'),
+      noTelepon: str('noTelepon'),
+      email: str('email'),
+      penerimaKps: str('penerimaKps'),
+      noKps: str('noKps'),
+      penerimaKip: str('penerimaKip'),
+      noKip: str('noKip'),
+      namaDiKip: str('namaDiKip'),
+      noKks: str('noKks'),
+      layakPip: str('layakPip'),
+      alasanLayakPip: str('alasanLayakPip'),
+      kebutuhanKhusus: str('kebutuhanKhusus'),
+      sekolahAsal: str('sekolahAsal'),
+      anakKe: str('anakKe'),
+      jumlahSaudara: str('jumlahSaudara'),
+      beratBadan: str('beratBadan'),
+      tinggiBadan: str('tinggiBadan'),
+      lingkarKepala: str('lingkarKepala'),
+      jarakSekolahKm: str('jarakSekolahKm'),
+      namaAyah,
+      tahunLahirAyah: str('tahunLahirAyah'),
+      pendidikanAyah: str('pendidikanAyah'),
+      pekerjaanAyah: str('pekerjaanAyah'),
+      penghasilanAyah: str('penghasilanAyah'),
+      nikAyah: str('nikAyah'),
+      namaIbu,
+      tahunLahirIbu: str('tahunLahirIbu'),
+      pendidikanIbu: str('pendidikanIbu'),
+      pekerjaanIbu: str('pekerjaanIbu'),
+      penghasilanIbu: str('penghasilanIbu'),
+      nikIbu: str('nikIbu'),
+      namaWali,
+      tahunLahirWali: str('tahunLahirWali'),
+      pendidikanWali: str('pendidikanWali'),
+      pekerjaanWali: str('pekerjaanWali'),
+      penghasilanWali: str('penghasilanWali'),
+      nikWali: str('nikWali'),
+      namaOrangTua,
+      noHpOrangTua,
+      statusSiswa,
+    };
+  }
+
+  function resolveOrCreateKelasId(db: DatabaseState, rombelRaw: string, explicitId?: number): {
+    kelasId: number;
+    created: boolean;
+  } {
+    if (explicitId && db.kelas.some((k) => k.id === explicitId)) {
+      return { kelasId: explicitId, created: false };
+    }
+    const clean = String(rombelRaw || '')
+      .toLowerCase()
+      .replace(/^(kelas|rombel|kls)\s+/i, '')
+      .trim();
+    if (!clean) {
+      return { kelasId: db.kelas[0]?.id || 1, created: false };
+    }
+    const matched = db.kelas.find((k) => {
+      const kClean = k.namaKelas.toLowerCase().replace(/^kelas\s+/i, '').trim();
+      return (
+        k.namaKelas.toLowerCase() === rombelRaw.toLowerCase().trim() ||
+        kClean === clean ||
+        kClean.replace(/\s+/g, '') === clean.replace(/\s+/g, '')
+      );
+    });
+    if (matched) {
+      return { kelasId: matched.id, created: false };
+    }
+
+    const digitMatch = /(\d)/.exec(clean);
+    const tingkat = digitMatch ? Math.min(6, Math.max(1, Number(digitMatch[1]))) : 1;
+    const displayName = /^kelas\s+/i.test(rombelRaw.trim())
+      ? rombelRaw.trim()
+      : `Kelas ${rombelRaw.trim()}`;
+    const newKelas = {
+      id: nextId(db.kelas),
+      namaKelas: displayName,
+      tingkat,
+      waliKelasId: null,
+      tahunAjaran: db.sekolah.ppdbTahunAjaran || '2026/2027',
+      kapasitas: 28,
+    };
+    db.kelas.push(newKelas);
+    return { kelasId: newKelas.id, created: true };
+  }
+
   // Siswa CRUD (strictly admin protected)
   app.get('/api/admin/siswa', requireAdminAuth, (_req, res) => {
     const db = getDb();
@@ -472,28 +641,97 @@ async function startServer() {
 
   app.post('/api/admin/siswa', requireAdminAuth, (req, res) => {
     const db = getDb();
-    const b = req.body || {};
+    const b = (req.body || {}) as Record<string, unknown>;
     if (!String(b.nama || '').trim() || !String(b.nis || '').trim()) {
       res.status(400).json({ error: 'Nama siswa dan NIS wajib diisi.' });
       return;
     }
+    const normalized = normalizeSiswaPayload(b, db.kelas[0]?.id || 1);
     const item = {
       id: nextId(db.siswa),
-      nama: String(b.nama).trim(),
-      nis: String(b.nis).trim(),
-      nisn: String(b.nisn || '-').trim(),
-      kelasId: Number(b.kelasId || db.kelas[0]?.id || 1),
-      jenisKelamin: b.jenisKelamin === 'Perempuan' ? ('Perempuan' as const) : ('Laki-laki' as const),
-      tempatLahir: String(b.tempatLahir || 'Musi Banyuasin').trim(),
-      tanggalLahir: String(b.tanggalLahir || '2016-01-01').trim(),
-      alamat: String(b.alamat || 'Desa Mulya Agung, Kec. Lalan').trim(),
-      namaOrangTua: String(b.namaOrangTua || '-').trim(),
-      noHpOrangTua: String(b.noHpOrangTua || '-').trim(),
-      statusSiswa: b.statusSiswa || 'Aktif',
+      ...normalized,
     };
     db.siswa.unshift(item);
     saveDb(db);
     res.status(201).json(item);
+  });
+
+  app.post('/api/admin/siswa/import-dapodik', requireAdminAuth, (req, res) => {
+    const db = getDb();
+    const rows = Array.isArray(req.body?.rows) ? req.body.rows : [];
+    const mode = String(req.body?.mode || 'upsert');
+    if (rows.length === 0) {
+      res.status(400).json({ error: 'Tidak ada data siswa Dapodik yang dikirim untuk diimpor.' });
+      return;
+    }
+
+    let importedCount = 0;
+    let updatedCount = 0;
+    let skippedCount = 0;
+    let createdClassesCount = 0;
+
+    if (mode === 'replace') {
+      db.siswa = [];
+    }
+
+    for (const rawRow of rows) {
+      const b = (rawRow || {}) as Record<string, unknown>;
+      const nama = String(b.nama || '').trim();
+      if (!nama) {
+        skippedCount += 1;
+        continue;
+      }
+
+      const rombelRaw = String(b.rombelDapodik || '').trim();
+      const explicitKelasId = b.kelasId ? Number(b.kelasId) : undefined;
+      const resolvedKelas = resolveOrCreateKelasId(db, rombelRaw, explicitKelasId);
+      if (resolvedKelas.created) createdClassesCount += 1;
+
+      const payload = normalizeSiswaPayload(
+        {
+          ...b,
+          kelasId: resolvedKelas.kelasId,
+          nis: String(b.nis || b.nisn || `DPD-${Date.now().toString().slice(-4)}`),
+        },
+        resolvedKelas.kelasId
+      );
+
+      const nisnClean = payload.nisn && payload.nisn !== '-' ? payload.nisn : '';
+      const nisClean = payload.nis && payload.nis !== '-' ? payload.nis : '';
+      const existingIdx = db.siswa.findIndex(
+        (s) =>
+          (nisnClean && s.nisn === nisnClean) ||
+          (nisClean && s.nis === nisClean)
+      );
+
+      if (existingIdx !== -1) {
+        if (mode === 'append_only') {
+          skippedCount += 1;
+        } else {
+          db.siswa[existingIdx] = {
+            ...db.siswa[existingIdx],
+            ...payload,
+            id: db.siswa[existingIdx].id,
+          };
+          updatedCount += 1;
+        }
+      } else {
+        db.siswa.push({
+          id: nextId(db.siswa),
+          ...payload,
+        });
+        importedCount += 1;
+      }
+    }
+
+    saveDb(db);
+    res.status(201).json({
+      importedCount,
+      updatedCount,
+      skippedCount,
+      createdClassesCount,
+      totalSiswa: db.siswa.length,
+    });
   });
 
   app.put('/api/admin/siswa/:id', requireAdminAuth, (req, res) => {
@@ -504,7 +742,9 @@ async function startServer() {
       res.status(404).json({ error: 'Data siswa tidak ditemukan.' });
       return;
     }
-    db.siswa[idx] = { ...db.siswa[idx], ...req.body, id };
+    const merged = { ...db.siswa[idx], ...(req.body || {}) } as Record<string, unknown>;
+    const normalized = normalizeSiswaPayload(merged, db.siswa[idx].kelasId);
+    db.siswa[idx] = { ...normalized, id };
     saveDb(db);
     res.json(db.siswa[idx]);
   });

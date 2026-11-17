@@ -290,16 +290,20 @@ export const GuruPage: React.FC<{ guru: Guru[] }> = ({ guru }) => {
             </div>
             <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
               <div className="space-y-1.5">
-                <p className="text-xs font-semibold text-blue-700">{g.kategori}</p>
+                <p className="text-xs font-semibold text-blue-700">
+                  {g.kategori}
+                  {g.statusKepegawaian ? ` · ${g.statusKepegawaian}` : ''}
+                </p>
                 <h3 className="font-display text-base font-bold text-slate-900 leading-snug">
                   {g.nama}
                 </h3>
                 <p className="text-xs font-medium text-slate-700">{g.jabatan}</p>
                 <p className="text-xs text-slate-500">Bidang: {g.mataPelajaran}</p>
               </div>
-              <div className="pt-3 border-t border-slate-100 space-y-0.5 text-xs text-slate-500">
+              <div className="pt-3 border-t border-slate-100 space-y-1 text-xs text-slate-500">
                 <p className="font-mono tabular-nums truncate">{g.nipNuptk}</p>
                 <p>Pendidikan: {g.pendidikan}</p>
+                {g.email && <p className="truncate text-slate-500">{g.email}</p>}
               </div>
             </div>
           </div>
