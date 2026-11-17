@@ -1,0 +1,1037 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "namaLengkap": "Eko Maryanto, S.Pd.",
+      "email": "admin@sdnmulyaagung.sch.id",
+      "role": "super_admin",
+      "salt": "f5ee70966bdab723e1e49c8c4892bf38",
+      "passwordHash": "b6c40a2fb9be8c32ce5d3b9a5663d7815a7aa26295ef72773ba915b66400b639bb356ea60bbffbd434a29e9099f2a7199deb8fb2d824a25274a7f91cbd9d31aa",
+      "createdAt": "2026-01-10T08:00:00.000Z"
+    }
+  ],
+  "sekolah": {
+    "id": 1,
+    "nama": "SDN MULYA AGUNG",
+    "npsn": "10645812",
+    "nss": "101110112018",
+    "jenjang": "Sekolah Dasar (SD)",
+    "status": "Negeri",
+    "akreditasi": "A (Unggul)",
+    "kurikulumAktif": "Kurikulum Merdeka",
+    "skPendirian": "SK Bupati Musi Banyuasin No. 421.2/1984/Pendidikan",
+    "tahunBerdiri": "1984",
+    "alamat": "Jl. Pendidikan Desa Mulya Agung, Primer 2",
+    "desa": "Mulya Agung",
+    "kecamatan": "Kecamatan Lalan",
+    "kabupaten": "Kabupaten Musi Banyuasin",
+    "provinsi": "Sumatera Selatan",
+    "kodePos": "30758",
+    "email": "info@sdnmulyaagung.sch.id",
+    "telepon": "(0714) 550-241",
+    "whatsapp": "6281273408812",
+    "jamOperasional": "Senin – Sabtu, Pukul 07.00 – 13.00 WIB",
+    "koordinatLat": -2.4186,
+    "koordinatLng": 104.3472,
+    "instagramUrl": "https://instagram.com/sdnmulyaagung.lalan",
+    "facebookUrl": "https://facebook.com/sdnmulyaagung.muba",
+    "youtubeUrl": "https://youtube.com/@sdnmulyaagung",
+    "tiktokUrl": "https://tiktok.com/@sdnmulyaagung",
+    "heroFoto": "/src/assets/images/hero_sdn_mulya_agung_1794929626952.jpg",
+    "lingkunganFoto": "/src/assets/images/lingkungan_sekolah_asri_1794929629703.jpg",
+    "kepalaSekolahNama": "Drs. H. Ahmad Fauzi, M.Pd.",
+    "kepalaSekolahNip": "19710814 199803 1 004",
+    "kepalaSekolahFoto": "/src/assets/images/kepala_sekolah_portrait_1794929628049.jpg",
+    "sambutanKepalaSekolah": "Assalamu’alaikum warahmatullahi wabarakatuh. Puji syukur ke hadirat Tuhan Yang Maha Esa atas diluncurkannya website resmi SDN Mulya Agung, Kecamatan Lalan, Kabupaten Musi Banyuasin. Portal digital ini kami hadirkan sebagai jembatan informasi yang transparan, ramah anak, dan responsif bagi seluruh peserta didik, orang tua, tenaga pendidik, serta masyarakat luas. Bersama semangat Kurikulum Merdeka dan pembiasaan karakter positif, kami berkomitmen membentuk generasi muda Mulya Agung yang berakhlak mulia, cerdas dalam literasi dan numerasi, mandiri, serta mencintai kelestarian lingkungan perairan dan alam Kecamatan Lalan.",
+    "profilSingkat": "SDN Mulya Agung adalah satuan pendidikan dasar negeri unggulan di Kecamatan Lalan, Kabupaten Musi Banyuasin, Sumatera Selatan. Berdiri sejak tahun 1984, sekolah ini mengedepankan pembelajaran aktif yang ramah anak, pembinaan karakter religius, kedisiplinan, pengembangan minat bakat melalui ekstrakurikuler, serta budaya sekolah Adiwiyata yang asri.",
+    "sejarah": "SDN Mulya Agung didirikan pada tahun 1984 seiring dengan berkembangnya kawasan transmigrasi dan permukiman masyarakat di Desa Mulya Agung, Kecamatan Lalan, Kabupaten Musi Banyuasin. Bermula dari 3 ruang kelas sederhana yang dibangun secara gotong royong bersama warga desa, sekolah ini terus bertumbuh menjadi salah satu sekolah dasar rujukan di wilayah Lalan. Pada tahun 2018 sekolah meraih predikat Akreditasi A, dan sejak 2023 dipercaya menerapkan Kurikulum Merdeka secara penuh disertai pengembangan Taman Baca Adiwiyata serta pojok literasi digital sekolah.",
+    "visi": "Terwujudnya Peserta Didik SDN Mulya Agung yang Beriman, Berkarakter Mulia, Berprestasi Akademik dan Non-Akademik, Mandiri, serta Berwawasan Lingkungan.",
+    "misi": [
+      "Menanamkan keimanan, ketakwaan, dan pembiasaan sikap religius dalam kegiatan harian sekolah.",
+      "Menyelenggarakan pembelajaran aktif, kreatif, ramah anak, dan berpihak pada murid sesuai Kurikulum Merdeka.",
+      "Mengembangkan potensi akademik, literasi, numerasi, olahraga, seni budaya Sumatera Selatan, dan Pramuka melalui pembinaan terarah.",
+      "Membiasakan budaya disiplin, jujur, gotong royong, dan kemandirian bagi seluruh warga sekolah.",
+      "Mewujudkan lingkungan sekolah yang bersih, hijau, aman, dan sehat sebagai sekolah ramah anak berwawasan lingkungan."
+    ],
+    "tujuan": [
+      "Meningkatkan capaian literasi dan numerasi peserta didik pada Asesmen Nasional minimal 90% di atas kompetensi minimum.",
+      "Membentuk kebiasaan ibadah, santun berbahasa, dan sikap saling menghormati di lingkungan sekolah maupun keluarga.",
+      "Meraih prestasi juara pada ajang OSN, O2SN, FLS2N, dan Lomba Pramuka tingkat Kecamatan Lalan hingga Kabupaten Musi Banyuasin.",
+      "Menjaga ketersediaan sarana pembelajaran yang aman, nyaman, inklusif, serta bebas perundungan."
+    ],
+    "fasilitas": [
+      {
+        "nama": "Ruang Kelas Ramah Anak",
+        "jumlah": "12 Ruang",
+        "kondisi": "Baik & Nyaman",
+        "deskripsi": "Dilengkapi pojok baca kelas, ventilasi silang yang sehat, serta meja kursi ergonomis."
+      },
+      {
+        "nama": "Perpustakaan & Taman Baca",
+        "jumlah": "1 Gedung + 1 Gazebo",
+        "kondisi": "Baik",
+        "deskripsi": "Koleksi 2.400+ buku cerita anak, referensi pelajaran, dan ruang baca terbuka di taman sekolah."
+      },
+      {
+        "nama": "Ruang UKS & Dokter Kecil",
+        "jumlah": "1 Ruang",
+        "kondisi": "Baik",
+        "deskripsi": "Tersedia tempat tidur pemeriksaan, kotak P3K lengkap, dan program pemantauan gizi siswa."
+      },
+      {
+        "nama": "Mushola Baitul Ilmi",
+        "jumlah": "1 Unit",
+        "kondisi": "Baik",
+        "deskripsi": "Pusat pembinaan shalat Dhuha berjamaah, praktik ibadah, dan pesantren kilat."
+      },
+      {
+        "nama": "Lapangan Upacara & Olahraga",
+        "jumlah": "1 Area Luas",
+        "kondisi": "Baik",
+        "deskripsi": "Digunakan untuk upacara bendera, latihan Pramuka, senam pagi, futsal mini, dan atletik."
+      },
+      {
+        "nama": "Ruang Multimedia & Komputer",
+        "jumlah": "1 Ruang (20 Unit Chromebook)",
+        "kondisi": "Baik",
+        "deskripsi": "Mendukung pelaksanaan ANBK dan pengenalan literasi digital siswa kelas tinggi."
+      }
+    ],
+    "strukturOrganisasi": [
+      {
+        "jabatan": "Kepala Sekolah",
+        "nama": "Drs. H. Ahmad Fauzi, M.Pd.",
+        "nip": "19710814 199803 1 004"
+      },
+      {
+        "jabatan": "Ketua Komite Sekolah",
+        "nama": "H. Sutrisno Hadi"
+      },
+      {
+        "jabatan": "Koordinator Kurikulum & Akademik",
+        "nama": "Siti Aminah, S.Pd.SD.",
+        "nip": "19830512 200902 2 007"
+      },
+      {
+        "jabatan": "Koordinator Kesiswaan & Ekstrakurikuler",
+        "nama": "Rendi Pratama, S.Pd.",
+        "nip": "19910421 201903 1 006"
+      },
+      {
+        "jabatan": "Koordinator Sarana Prasarana",
+        "nama": "Bambang Hermanto, S.Pd.",
+        "nip": "19860903 201402 1 002"
+      },
+      {
+        "jabatan": "Kepala Tata Usaha & Operator Dapodik",
+        "nama": "Eko Maryanto, S.Pd.",
+        "nip": "19950218 202012 1 005"
+      }
+    ],
+    "kurikulumRingkasan": "SDN Mulya Agung menerapkan Kurikulum Merdeka yang terbagi dalam 3 fase perkembangan peserta didik: Fase A (Kelas 1–2), Fase B (Kelas 3–4), dan Fase C (Kelas 5–6), diperkuat dengan Projek Penguatan Profil Pelajar Pancasila (P5) serta muatan lokal budaya Musi Banyuasin.",
+    "p5Tema": [
+      "Gaya Hidup Berkelanjutan: Pengelolaan Sampah & Kebun Toga Sekolah",
+      "Kearifan Lokal: Mengenal Seni Tari & Kuliner Khas Musi Banyuasin",
+      "Bhinneka Tunggal Ika: Festival Budaya Nusantara dan Persahabatan",
+      "Bangunlah Jiwa dan Raganya: Sekolah Sehat Bebas Perundungan"
+    ],
+    "kurikulumMapel": [
+      {
+        "kelompok": "Wajib",
+        "namaMapel": "Pendidikan Agama & Budi Pekerti",
+        "faseA": "4 JP",
+        "faseB": "4 JP",
+        "faseC": "4 JP",
+        "keterangan": "Pembinaan akhlak dan praktik ibadah"
+      },
+      {
+        "kelompok": "Wajib",
+        "namaMapel": "Pendidikan Pancasila",
+        "faseA": "4 JP",
+        "faseB": "4 JP",
+        "faseC": "4 JP",
+        "keterangan": "Nilai kebangsaan dan gotong royong"
+      },
+      {
+        "kelompok": "Wajib",
+        "namaMapel": "Bahasa Indonesia",
+        "faseA": "6 JP",
+        "faseB": "6 JP",
+        "faseC": "6 JP",
+        "keterangan": "Penguatan literasi membaca & menulis"
+      },
+      {
+        "kelompok": "Wajib",
+        "namaMapel": "Matematika",
+        "faseA": "4 JP",
+        "faseB": "5 JP",
+        "faseC": "5 JP",
+        "keterangan": "Penguatan numerasi kontekstual"
+      },
+      {
+        "kelompok": "Wajib",
+        "namaMapel": "Ilmu Pengetahuan Alam & Sosial (IPAS)",
+        "faseA": "Terintegrasi",
+        "faseB": "5 JP",
+        "faseC": "5 JP",
+        "keterangan": "Eksplorasi sains dan lingkungan sekitar"
+      },
+      {
+        "kelompok": "Wajib",
+        "namaMapel": "PJOK (Pendidikan Jasmani)",
+        "faseA": "3 JP",
+        "faseB": "3 JP",
+        "faseC": "3 JP",
+        "keterangan": "Kebugaran, permainan tradisional, atletik"
+      },
+      {
+        "kelompok": "Wajib",
+        "namaMapel": "Seni Budaya (Tari / Rupa / Musik)",
+        "faseA": "3 JP",
+        "faseB": "3 JP",
+        "faseC": "3 JP",
+        "keterangan": "Ekspresi kreativitas anak"
+      },
+      {
+        "kelompok": "Pilihan & Mulok",
+        "namaMapel": "Bahasa Inggris & Mulok Muba",
+        "faseA": "2 JP",
+        "faseB": "2 JP",
+        "faseC": "2 JP",
+        "keterangan": "Komunikasi dasar & budaya lokal Sumatera Selatan"
+      }
+    ],
+    "tenagaKependidikanJumlah": 4,
+    "ppdbTahunAjaran": "2026/2027",
+    "ppdbStatusBuka": true,
+    "ppdbJadwal": [
+      {
+        "tahap": "Sosialisasi & Pengambilan Informasi",
+        "tanggal": "1 – 15 Mei 2026",
+        "keterangan": "Informasi dibuka secara online maupun di papan pengumuman sekolah."
+      },
+      {
+        "tahap": "Pendaftaran Jalur Zonasi, Afirmasi & Perpindahan",
+        "tanggal": "16 Mei – 20 Juni 2026",
+        "keterangan": "Pendaftaran online melalui website atau posko PPDB SDN Mulya Agung."
+      },
+      {
+        "tahap": "Verifikasi Berkas & Pemetaan Rombel",
+        "tanggal": "21 – 25 Juni 2026",
+        "keterangan": "Verifikasi keaslian KK, Akta Kelahiran, dan dokumen pendukung."
+      },
+      {
+        "tahap": "Pengumuman Hasil Seleksi PPDB",
+        "tanggal": "27 Juni 2026",
+        "keterangan": "Diumumkan melalui website resmi dan papan informasi sekolah."
+      },
+      {
+        "tahap": "Daftar Ulang & Masa Pengenalan Lingkungan Sekolah (MPLS)",
+        "tanggal": "29 Juni – 13 Juli 2026",
+        "keterangan": "Daftar ulang peserta didik baru dilanjutkan hari pertama masuk sekolah."
+      }
+    ],
+    "ppdbPersyaratan": [
+      "Berusia paling rendah 6 (enam) tahun pada tanggal 1 Juli 2026 (prioritas usia 7 tahun).",
+      "Memiliki Akta Kelahiran atau Surat Keterangan Lahir yang sah.",
+      "Fotokopi Kartu Keluarga (KK) Kecamatan Lalan / domisili terdekat.",
+      "Fotokopi KTP kedua orang tua/wali.",
+      "Surat Keterangan / Ijazah TK atau PAUD (jika memiliki; bukan syarat wajib masuk SD).",
+      "Kartu PKH/KIP/KKS khusus bagi pendaftar Jalur Afirmasi."
+    ],
+    "ppdbAlur": [
+      {
+        "langkah": "01",
+        "judul": "Isi Formulir Online",
+        "deskripsi": "Orang tua/wali mengisi formulir pendaftaran online pada halaman PPDB website ini."
+      },
+      {
+        "langkah": "02",
+        "judul": "Simpan Nomor Pendaftaran",
+        "deskripsi": "Sistem menerbitkan kode unik pendaftaran (contoh: PPDB-2026-0004) secara otomatis."
+      },
+      {
+        "langkah": "03",
+        "judul": "Serahkan Berkas Fisik",
+        "deskripsi": "Membawa fotokopi Akta Kelahiran & KK ke Sekretariat PPDB SDN Mulya Agung."
+      },
+      {
+        "langkah": "04",
+        "judul": "Verifikasi Panitia",
+        "deskripsi": "Panitia memeriksa berkas dan memperbarui status verifikasi secara transparan."
+      },
+      {
+        "langkah": "05",
+        "judul": "Pengumuman & Daftar Ulang",
+        "deskripsi": "Cek hasil kelulusan online menggunakan nomor pendaftaran dan lakukan daftar ulang."
+      }
+    ],
+    "ppdbPengumuman": "Pendaftaran Peserta Didik Baru (PPDB) SDN Mulya Agung Tahun Pelajaran 2026/2027 dibuka tanpa dipungut biaya (GRATIS). Daya tampung tahun ini sebanyak 2 rombongan belajar (56 peserta didik baru)."
+  },
+  "guru": [
+    {
+      "id": 1,
+      "nama": "Drs. H. Ahmad Fauzi, M.Pd.",
+      "jabatan": "Kepala Sekolah",
+      "kategori": "Kepala Sekolah",
+      "mataPelajaran": "Manajemen Sekolah & Supervisi",
+      "nipNuptk": "NIP. 19710814 199803 1 004",
+      "pendidikan": "S2 Manajemen Pendidikan",
+      "foto": "/src/assets/images/kepala_sekolah_portrait_1794929628049.jpg",
+      "email": "kepsek@sdnmulyaagung.sch.id",
+      "urutan": 1
+    },
+    {
+      "id": 2,
+      "nama": "Siti Aminah, S.Pd.SD.",
+      "jabatan": "Guru Kelas VI A / Koordinator Kurikulum",
+      "kategori": "Guru Kelas",
+      "mataPelajaran": "Tematik & Kurikulum Merdeka Fase C",
+      "nipNuptk": "NIP. 19830512 200902 2 007",
+      "pendidikan": "S1 PGSD",
+      "foto": "/src/assets/images/pembelajaran_kelas_sd_1794929628086.jpg",
+      "email": "sitiaminah@sdnmulyaagung.sch.id",
+      "urutan": 2
+    },
+    {
+      "id": 3,
+      "nama": "Rendi Pratama, S.Pd.",
+      "jabatan": "Guru PJOK & Pembina Pramuka",
+      "kategori": "Guru Mata Pelajaran",
+      "mataPelajaran": "Pendidikan Jasmani, Olahraga & Kesehatan",
+      "nipNuptk": "NIP. 19910421 201903 1 006",
+      "pendidikan": "S1 Pendidikan Jasmani",
+      "foto": "/src/assets/images/pramuka_ekskul_sd_1794929628284.jpg",
+      "email": "rendi@sdnmulyaagung.sch.id",
+      "urutan": 3
+    },
+    {
+      "id": 4,
+      "nama": "Nurhayati, S.Pd.I.",
+      "jabatan": "Guru Pendidikan Agama Islam",
+      "kategori": "Guru Mata Pelajaran",
+      "mataPelajaran": "Pendidikan Agama Islam & Budi Pekerti",
+      "nipNuptk": "NIP. 19881105 201504 2 001",
+      "pendidikan": "S1 Pendidikan Agama Islam",
+      "foto": "/src/assets/images/prestasi_lomba_sd_1794929627712.jpg",
+      "email": "nurhayati@sdnmulyaagung.sch.id",
+      "urutan": 4
+    },
+    {
+      "id": 5,
+      "nama": "Dewi Kartika Sari, S.Pd.",
+      "jabatan": "Guru Kelas I A & Pembina Seni Tari",
+      "kategori": "Guru Kelas",
+      "mataPelajaran": "Literasi Awal & Seni Budaya Fase A",
+      "nipNuptk": "NUPTK. 4539768669230012",
+      "pendidikan": "S1 PGSD",
+      "foto": "/src/assets/images/seni_silat_sd_1794929628136.jpg",
+      "email": "dewi@sdnmulyaagung.sch.id",
+      "urutan": 5
+    },
+    {
+      "id": 6,
+      "nama": "Bambang Hermanto, S.Pd.",
+      "jabatan": "Guru Kelas V A & Pembina Olimpiade Sains",
+      "kategori": "Guru Kelas",
+      "mataPelajaran": "Matematika & IPAS Fase C",
+      "nipNuptk": "NIP. 19860903 201402 1 002",
+      "pendidikan": "S1 PGSD",
+      "foto": "/src/assets/images/hero_sdn_mulya_agung_1794929626952.jpg",
+      "email": "bambang@sdnmulyaagung.sch.id",
+      "urutan": 6
+    },
+    {
+      "id": 7,
+      "nama": "Eko Maryanto, S.Pd.",
+      "jabatan": "Kepala Tata Usaha & Operator Sekolah",
+      "kategori": "Tenaga Kependidikan",
+      "mataPelajaran": "Administrasi Dapodik & TIK Sekolah",
+      "nipNuptk": "NIP. 19950218 202012 1 005",
+      "pendidikan": "S1 Pendidikan Komputer",
+      "foto": "/src/assets/images/lingkungan_sekolah_asri_1794929629703.jpg",
+      "email": "ekomaryanto@sdnmulyaagung.sch.id",
+      "urutan": 7
+    },
+    {
+      "id": 8,
+      "nama": "Ratna Wulandari, A.Md.Pust.",
+      "jabatan": "Pustakawan & Pengelola Taman Baca",
+      "kategori": "Tenaga Kependidikan",
+      "mataPelajaran": "Layanan Perpustakaan & Gerakan Literasi",
+      "nipNuptk": "NUPTK. 8842771672130044",
+      "pendidikan": "D3 Ilmu Perpustakaan",
+      "foto": "/src/assets/images/lingkungan_sekolah_asri_1794929629703.jpg",
+      "email": "perpustakaan@sdnmulyaagung.sch.id",
+      "urutan": 8
+    }
+  ],
+  "kelas": [
+    {
+      "id": 1,
+      "namaKelas": "Kelas 1A",
+      "tingkat": 1,
+      "waliKelasId": 5,
+      "tahunAjaran": "2026/2027",
+      "kapasitas": 28
+    },
+    {
+      "id": 2,
+      "namaKelas": "Kelas 2A",
+      "tingkat": 2,
+      "waliKelasId": 5,
+      "tahunAjaran": "2026/2027",
+      "kapasitas": 28
+    },
+    {
+      "id": 3,
+      "namaKelas": "Kelas 3A",
+      "tingkat": 3,
+      "waliKelasId": 3,
+      "tahunAjaran": "2026/2027",
+      "kapasitas": 28
+    },
+    {
+      "id": 4,
+      "namaKelas": "Kelas 4A",
+      "tingkat": 4,
+      "waliKelasId": 4,
+      "tahunAjaran": "2026/2027",
+      "kapasitas": 28
+    },
+    {
+      "id": 5,
+      "namaKelas": "Kelas 5A",
+      "tingkat": 5,
+      "waliKelasId": 6,
+      "tahunAjaran": "2026/2027",
+      "kapasitas": 28
+    },
+    {
+      "id": 6,
+      "namaKelas": "Kelas 6A",
+      "tingkat": 6,
+      "waliKelasId": 2,
+      "tahunAjaran": "2026/2027",
+      "kapasitas": 28
+    }
+  ],
+  "siswa": [
+    {
+      "id": 1,
+      "nama": "Muhammad Alif Pratama",
+      "nis": "20260101",
+      "nisn": "0164582901",
+      "kelasId": 6,
+      "jenisKelamin": "Laki-laki",
+      "tempatLahir": "Musi Banyuasin",
+      "tanggalLahir": "2014-05-12",
+      "alamat": "Dusun II Desa Mulya Agung, Kec. Lalan",
+      "namaOrangTua": "Hendro Wijaya",
+      "noHpOrangTua": "081278901122",
+      "statusSiswa": "Aktif"
+    },
+    {
+      "id": 2,
+      "nama": "Aisyah Putri Ramadhani",
+      "nis": "20260102",
+      "nisn": "0164582902",
+      "kelasId": 6,
+      "jenisKelamin": "Perempuan",
+      "tempatLahir": "Palembang",
+      "tanggalLahir": "2014-08-19",
+      "alamat": "Dusun I Desa Mulya Agung, Kec. Lalan",
+      "namaOrangTua": "Suharti",
+      "noHpOrangTua": "085267119044",
+      "statusSiswa": "Aktif"
+    },
+    {
+      "id": 3,
+      "nama": "Dimas Saputra",
+      "nis": "20260201",
+      "nisn": "0173829104",
+      "kelasId": 5,
+      "jenisKelamin": "Laki-laki",
+      "tempatLahir": "Lalan",
+      "tanggalLahir": "2015-03-04",
+      "alamat": "Dusun III Desa Mulya Agung, Kec. Lalan",
+      "namaOrangTua": "Slamet Riyadi",
+      "noHpOrangTua": "081367228910",
+      "statusSiswa": "Aktif"
+    },
+    {
+      "id": 4,
+      "nama": "Nayla Azzahra",
+      "nis": "20260301",
+      "nisn": "0184910221",
+      "kelasId": 4,
+      "jenisKelamin": "Perempuan",
+      "tempatLahir": "Sekayu",
+      "tanggalLahir": "2016-11-22",
+      "alamat": "Primer 2 Desa Mulya Agung, Kec. Lalan",
+      "namaOrangTua": "Dedi Kurniawan",
+      "noHpOrangTua": "082180992341",
+      "statusSiswa": "Aktif"
+    },
+    {
+      "id": 5,
+      "nama": "Rizky Aditya Nugroho",
+      "nis": "20260401",
+      "nisn": "0195018832",
+      "kelasId": 3,
+      "jenisKelamin": "Laki-laki",
+      "tempatLahir": "Musi Banyuasin",
+      "tanggalLahir": "2017-07-15",
+      "alamat": "Dusun I Desa Mulya Agung, Kec. Lalan",
+      "namaOrangTua": "Agus Santoso",
+      "noHpOrangTua": "081271129088",
+      "statusSiswa": "Aktif"
+    },
+    {
+      "id": 6,
+      "nama": "Zahra Khairunnisa",
+      "nis": "20260501",
+      "nisn": "0201129485",
+      "kelasId": 2,
+      "jenisKelamin": "Perempuan",
+      "tempatLahir": "Musi Banyuasin",
+      "tanggalLahir": "2018-02-28",
+      "alamat": "Dusun II Desa Mulya Agung, Kec. Lalan",
+      "namaOrangTua": "Mulyono",
+      "noHpOrangTua": "085378910023",
+      "statusSiswa": "Aktif"
+    },
+    {
+      "id": 7,
+      "nama": "Fajar Ramadhan",
+      "nis": "20260601",
+      "nisn": "0214958102",
+      "kelasId": 1,
+      "jenisKelamin": "Laki-laki",
+      "tempatLahir": "Lalan",
+      "tanggalLahir": "2019-09-10",
+      "alamat": "Dusun IV Desa Mulya Agung, Kec. Lalan",
+      "namaOrangTua": "Suryadi",
+      "noHpOrangTua": "082281994411",
+      "statusSiswa": "Aktif"
+    },
+    {
+      "id": 8,
+      "nama": "Putri Melati Kusuma",
+      "nis": "20260602",
+      "nisn": "0214958109",
+      "kelasId": 1,
+      "jenisKelamin": "Perempuan",
+      "tempatLahir": "Musi Banyuasin",
+      "tanggalLahir": "2019-12-03",
+      "alamat": "Jl. Poros Desa Mulya Agung, Kec. Lalan",
+      "namaOrangTua": "Rina Marlina",
+      "noHpOrangTua": "081373451290",
+      "statusSiswa": "Aktif"
+    }
+  ],
+  "berita": [
+    {
+      "id": 1,
+      "judul": "Siswa SDN Mulya Agung Raih Juara 1 Olimpiade Sains & Matematika Tingkat Kabupaten",
+      "slug": "siswa-sdn-mulya-agung-raih-juara-1-olimpiade-sains-kabupaten",
+      "kategori": "Prestasi",
+      "foto": "/src/assets/images/prestasi_lomba_sd_1794929627712.jpg",
+      "ringkasan": "Tim olimpiade siswa SDN Mulya Agung berhasil membawa pulang piala juara pertama pada ajang OSN SD tingkat Kabupaten Musi Banyuasin tahun 2026.",
+      "isi": "Sekayu — Kabar membanggakan datang dari kontingen siswa SDN Mulya Agung, Kecamatan Lalan. Dalam perhelatan Olimpiade Sains Nasional (OSN) Jenjang SD tingkat Kabupaten Musi Banyuasin, peserta didik kami berhasil meraih Juara 1 bidang Matematika dan Harapan 1 bidang IPA.\n\nKepala SDN Mulya Agung, Drs. H. Ahmad Fauzi, M.Pd., menyampaikan apresiasi mendalam kepada para guru pembina serta dukungan orang tua murid. Menurut beliau, capaian ini merupakan buah dari pembiasaan klinik belajar pagi serta budaya membaca di Taman Baca sekolah.\n\nSelanjutnya, siswa peraih juara akan mengikuti pembinaan lanjutan bersama Dinas Pendidikan dan Kebudayaan Kabupaten Musi Banyuasin untuk persiapan menuju tingkat Provinsi Sumatera Selatan.",
+      "penulis": "Humas SDN Mulya Agung",
+      "tanggal": "2026-11-12",
+      "unggulan": true,
+      "dilihat": 428
+    },
+    {
+      "id": 2,
+      "judul": "Perkemahan Sabtu Minggu (Persami) Pramuka Penggalang Berlangsung Meriah & Disiplin",
+      "slug": "perkemahan-sabtu-minggu-pramuka-sdn-mulya-agung",
+      "kategori": "Pramuka",
+      "foto": "/src/assets/images/pramuka_ekskul_sd_1794929628284.jpg",
+      "ringkasan": "Sebanyak 64 anggota Pramuka Gugus Depan SDN Mulya Agung mengikuti latihan kemandirian, tali-temali, kompas, dan api unggun di halaman sekolah.",
+      "isi": "Gugus Depan Pramuka SDN Mulya Agung menyelenggarakan kegiatan Perkemahan Sabtu Minggu (Persami) yang diikuti oleh siswa kelas IV, V, dan VI. Kegiatan difokuskan pada pembentukan karakter kemandirian, kerja sama regu, kecakapan kompas, serta kepedulian terhadap lingkungan.\n\nPembina Pramuka Kak Rendi Pratama, S.Pd. menjelaskan bahwa setiap regu dilatih menyiapkan perlengkapan secara mandiri, memimpin barisan dengan tertib, dan menampilkan pentas seni bertema kearifan lokal Musi Banyuasin pada malam api unggun.",
+      "penulis": "Rendi Pratama, S.Pd.",
+      "tanggal": "2026-11-08",
+      "unggulan": false,
+      "dilihat": 312
+    },
+    {
+      "id": 3,
+      "judul": "Implementasi Pembelajaran Berdiferensiasi Kurikulum Merdeka di Kelas Tinggi",
+      "slug": "pembelajaran-berdiferensiasi-kurikulum-merdeka",
+      "kategori": "Pendidikan",
+      "foto": "/src/assets/images/pembelajaran_kelas_sd_1794929628086.jpg",
+      "ringkasan": "Guru SDN Mulya Agung menerapkan metode belajar kelompok interaktif untuk memperkuat kemampuan literasi dan numerasi seluruh siswa.",
+      "isi": "Suasana belajar di ruang kelas SDN Mulya Agung tampak semakin hidup melalui penerapan pembelajaran berdiferensiasi. Setiap peserta didik difasilitasi sesuai gaya belajar visual, auditori, maupun kinestetik dengan media ajar konkret yang dibuat oleh guru.\n\nMelalui pendekatan ramah anak, siswa berani mengajukan pertanyaan, berdiskusi aktif bersama teman sebaya, dan mempresentasikan hasil karya mereka di depan kelas dengan penuh percaya diri.",
+      "penulis": "Siti Aminah, S.Pd.SD.",
+      "tanggal": "2026-11-03",
+      "unggulan": false,
+      "dilihat": 274
+    },
+    {
+      "id": 4,
+      "judul": "Festival Seni Tari Kreasi & Pencak Silat Meriahkan Peringatan Hari Sumpah Pemuda",
+      "slug": "festival-seni-tari-dan-pencak-silat-hari-sumpah-pemuda",
+      "kategori": "Seni",
+      "foto": "/src/assets/images/seni_silat_sd_1794929628136.jpg",
+      "ringkasan": "Penampilan tari tradisional Sumatera Selatan dan jurus tunggal Pencak Silat siswa SDN Mulya Agung memukau para orang tua yang hadir.",
+      "isi": "Dalam rangka memperingati Hari Sumpah Pemuda sekaligus gelar karya Projek Penguatan Profil Pelajar Pancasila (P5), SDN Mulya Agung menggelar pentas seni budaya daerah di panggung halaman sekolah.\n\nPara siswa menampilkan tarian daerah dengan busana adat yang rapi serta demonstrasi jurus seni Pencak Silat sebagai wujud pelestarian warisan budaya bangsa sejak usia dini.",
+      "penulis": "Dewi Kartika Sari, S.Pd.",
+      "tanggal": "2026-10-28",
+      "unggulan": false,
+      "dilihat": 389
+    },
+    {
+      "id": 5,
+      "judul": "Workshop Komunitas Belajar Guru: Penyusunan Modul Ajar Ramah Anak & Asesmen Formatif",
+      "slug": "workshop-komunitas-belajar-guru-modul-ajar",
+      "kategori": "Kegiatan Guru",
+      "foto": "/src/assets/images/lingkungan_sekolah_asri_1794929629703.jpg",
+      "ringkasan": "Seluruh dewan guru SDN Mulya Agung mengikuti lokakarya rutin Komunitas Belajar untuk menyelaraskan perangkat ajar semester genap.",
+      "isi": "Komunitas Belajar (Kombel) Guru SDN Mulya Agung kembali mengadakan pertemuan refleksi dan penyusunan modul ajar. Kegiatan ini bertujuan memastikan setiap guru menghadirkan pembelajaran yang menyenangkan, bebas tekanan, dan terukur perkembangannya.",
+      "penulis": "Eko Maryanto, S.Pd.",
+      "tanggal": "2026-10-20",
+      "unggulan": false,
+      "dilihat": 195
+    }
+  ],
+  "pengumuman": [
+    {
+      "id": 1,
+      "judul": "Pembukaan Pendaftaran Peserta Didik Baru (PPDB) Tahun Pelajaran 2026/2027",
+      "tanggal": "2026-11-15",
+      "kategori": "PPDB",
+      "prioritas": "Penting",
+      "isi": "Diberitahukan kepada seluruh orang tua/wali calon peserta didik di wilayah Kecamatan Lalan dan sekitarnya bahwa pendaftaran PPDB SDN Mulya Agung Tahun Pelajaran 2026/2027 telah dibuka secara online dan tatap muka di Sekretariat Sekolah. Seluruh proses pendaftaran GRATIS.",
+      "fileLampiranNama": "Brosur & Juknis PPDB 2026-2027.txt",
+      "fileLampiranDokumenId": 1
+    },
+    {
+      "id": 2,
+      "judul": "Jadwal Penilaian Sumatif Akhir Semester (PSAS) Ganjil Tahun 2026",
+      "tanggal": "2026-11-10",
+      "kategori": "Akademik",
+      "prioritas": "Penting",
+      "isi": "Pelaksanaan Penilaian Sumatif Akhir Semester Ganjil bagi peserta didik Kelas I hingga Kelas VI akan dilaksanakan pada tanggal 1 – 6 Desember 2026. Mohon kerja sama orang tua untuk mendampingi anak belajar di rumah serta menjaga kesehatan peserta didik.",
+      "fileLampiranNama": "Surat Edaran Jadwal PSAS Ganjil 2026.txt",
+      "fileLampiranDokumenId": 2
+    },
+    {
+      "id": 3,
+      "judul": "Gerakan Jumat Bersih & Penanaman Tanaman Obat Keluarga (TOGA)",
+      "tanggal": "2026-11-04",
+      "kategori": "Lingkungan Sekolah",
+      "prioritas": "Reguler",
+      "isi": "Seluruh siswa diharapkan membawa botol minum isi ulang (tumbler) setiap hari untuk mengurangi sampah plastik di sekolah serta berpartisipasi dalam kegiatan Jumat Bersih merawat Taman Baca Adiwiyata.",
+      "fileLampiranNama": "Panduan Sekolah Adiwiyata.txt",
+      "fileLampiranDokumenId": 3
+    }
+  ],
+  "prestasi": [
+    {
+      "id": 1,
+      "judul": "Juara 1 Olimpiade Sains Nasional (OSN) Bidang Matematika SD",
+      "tingkat": "Kabupaten",
+      "kategori": "Akademik",
+      "peraih": "Muhammad Alif Pratama (Kelas 6A)",
+      "pembina": "Bambang Hermanto, S.Pd.",
+      "tahun": "2026",
+      "peringkat": "Juara 1",
+      "deskripsi": "Meraih nilai tertinggi dari 78 peserta perwakilan seluruh kecamatan di Kabupaten Musi Banyuasin.",
+      "foto": "/src/assets/images/prestasi_lomba_sd_1794929627712.jpg"
+    },
+    {
+      "id": 2,
+      "judul": "Juara 1 Lomba Regu Berprestasi Pramuka Siaga & Penggalang",
+      "tingkat": "Kecamatan",
+      "kategori": "Pramuka",
+      "peraih": "Regu Harimau & Melati Gudep Mulya Agung",
+      "pembina": "Rendi Pratama, S.Pd.",
+      "tahun": "2026",
+      "peringkat": "Juara Umum",
+      "deskripsi": "Menyapu bersih kategori PBB, sandi morse, pionering mini, dan pentas seni kemah Lalan.",
+      "foto": "/src/assets/images/pramuka_ekskul_sd_1794929628284.jpg"
+    },
+    {
+      "id": 3,
+      "judul": "Juara 2 Festival Seni Tari Kreasi Daerah (FLS2N SD)",
+      "tingkat": "Kabupaten",
+      "kategori": "Seni & Budaya",
+      "peraih": "Tim Tari Cendrawasih SDN Mulya Agung",
+      "pembina": "Dewi Kartika Sari, S.Pd.",
+      "tahun": "2025",
+      "peringkat": "Juara 2",
+      "deskripsi": "Menampilkan koreografi tari kreasi bernuansa sungai Lalan dan budaya Musi Banyuasin.",
+      "foto": "/src/assets/images/seni_silat_sd_1794929628136.jpg"
+    },
+    {
+      "id": 4,
+      "judul": "Juara 1 Pencak Silat O2SN Putra & Atletik Lari 60 Meter",
+      "tingkat": "Kecamatan",
+      "kategori": "Olahraga",
+      "peraih": "Dimas Saputra & Rizky Aditya",
+      "pembina": "Rendi Pratama, S.Pd.",
+      "tahun": "2026",
+      "peringkat": "Juara 1",
+      "deskripsi": "Mewakili Kecamatan Lalan pada seleksi O2SN tingkat Kabupaten Musi Banyuasin.",
+      "foto": "/src/assets/images/seni_silat_sd_1794929628136.jpg"
+    },
+    {
+      "id": 5,
+      "judul": "Penghargaan Sekolah Ramah Anak & Taman Baca Teraktif",
+      "tingkat": "Kabupaten",
+      "kategori": "Sekolah",
+      "peraih": "SDN Mulya Agung",
+      "pembina": "Drs. H. Ahmad Fauzi, M.Pd.",
+      "tahun": "2025",
+      "peringkat": "Terbaik II",
+      "deskripsi": "Apresiasi atas pembudayaan literasi ruang terbuka dan lingkungan belajar bebas perundungan.",
+      "foto": "/src/assets/images/lingkungan_sekolah_asri_1794929629703.jpg"
+    }
+  ],
+  "ekstrakurikuler": [
+    {
+      "id": 1,
+      "nama": "Pramuka (Siaga & Penggalang)",
+      "kategori": "Kepanduan & Karakter",
+      "deskripsi": "Ekstrakurikuler wajib yang melatih kedisiplinan, kemandirian, kecakapan hidup, kepemimpinan regu, dan cinta tanah air.",
+      "jadwal": "Setiap Jumat, Pukul 14.30 – 16.30 WIB",
+      "tempat": "Lapangan Utama SDN Mulya Agung",
+      "pembina": "Rendi Pratama, S.Pd.",
+      "foto": "/src/assets/images/pramuka_ekskul_sd_1794929628284.jpg",
+      "dokumentasi": [
+        "/src/assets/images/pramuka_ekskul_sd_1794929628284.jpg",
+        "/src/assets/images/hero_sdn_mulya_agung_1794929626952.jpg"
+      ]
+    },
+    {
+      "id": 2,
+      "nama": "Pencak Silat Bela Diri Tradisional",
+      "kategori": "Olahraga & Bela Diri",
+      "deskripsi": "Membentuk ketangkasan fisik, sportivitas, pengendalian diri, dan pelestarian bela diri warisan budaya Indonesia.",
+      "jadwal": "Setiap Rabu, Pukul 15.00 – 16.30 WIB",
+      "tempat": "Halaman Tengah Sekolah",
+      "pembina": "Rendi Pratama, S.Pd. & Pelatih IPSI Lalan",
+      "foto": "/src/assets/images/seni_silat_sd_1794929628136.jpg",
+      "dokumentasi": [
+        "/src/assets/images/seni_silat_sd_1794929628136.jpg",
+        "/src/assets/images/prestasi_lomba_sd_1794929627712.jpg"
+      ]
+    },
+    {
+      "id": 3,
+      "nama": "Olahraga (Futsal Mini, Bulu Tangkis & Atletik)",
+      "kategori": "Olahraga",
+      "deskripsi": "Wadah pembinaan kebugaran jasmani dan persiapan bibit atlet O2SN tingkat Kecamatan hingga Kabupaten.",
+      "jadwal": "Setiap Selasa & Kamis, Pukul 15.00 – 16.30 WIB",
+      "tempat": "Lapangan Olahraga Sekolah",
+      "pembina": "Rendi Pratama, S.Pd.",
+      "foto": "/src/assets/images/hero_sdn_mulya_agung_1794929626952.jpg",
+      "dokumentasi": [
+        "/src/assets/images/hero_sdn_mulya_agung_1794929626952.jpg",
+        "/src/assets/images/prestasi_lomba_sd_1794929627712.jpg"
+      ]
+    },
+    {
+      "id": 4,
+      "nama": "Seni Tari Tradisional & Paduan Suara",
+      "kategori": "Seni & Budaya",
+      "deskripsi": "Mengasah kepekaan estetika, keluwesan gerak tari khas Sumatera Selatan, serta olah vokal lagu nasional dan daerah.",
+      "jadwal": "Setiap Sabtu, Pukul 10.30 – 12.00 WIB",
+      "tempat": "Aula & Pendopo Sekolah",
+      "pembina": "Dewi Kartika Sari, S.Pd.",
+      "foto": "/src/assets/images/seni_silat_sd_1794929628136.jpg",
+      "dokumentasi": [
+        "/src/assets/images/seni_silat_sd_1794929628136.jpg",
+        "/src/assets/images/pembelajaran_kelas_sd_1794929628086.jpg"
+      ]
+    },
+    {
+      "id": 5,
+      "nama": "Tahfidz Juz Amma & Kaligrafi Islam",
+      "kategori": "Keagamaan",
+      "deskripsi": "Pembinaan hafalan surat pendek, baca tulis Al-Qur’an dengan tartil, dan keterampilan menulis indah kaligrafi.",
+      "jadwal": "Setiap Senin & Kamis, Pukul 13.30 – 14.30 WIB",
+      "tempat": "Mushola Baitul Ilmi",
+      "pembina": "Nurhayati, S.Pd.I.",
+      "foto": "/src/assets/images/pembelajaran_kelas_sd_1794929628086.jpg",
+      "dokumentasi": [
+        "/src/assets/images/pembelajaran_kelas_sd_1794929628086.jpg",
+        "/src/assets/images/lingkungan_sekolah_asri_1794929629703.jpg"
+      ]
+    }
+  ],
+  "galeri": [
+    {
+      "id": 1,
+      "judul": "Suasana Belajar Aktif Kurikulum Merdeka di Kelas",
+      "tipe": "foto",
+      "kategori": "Kegiatan Pembelajaran",
+      "url": "/src/assets/images/pembelajaran_kelas_sd_1794929628086.jpg",
+      "tanggal": "2026-11-11",
+      "keterangan": "Siswa antusias berdiskusi dan membaca bersama guru kelas."
+    },
+    {
+      "id": 2,
+      "judul": "Upacara Bendera Hari Senin & Pembinaan Kedisiplinan",
+      "tipe": "foto",
+      "kategori": "Upacara",
+      "url": "/src/assets/images/hero_sdn_mulya_agung_1794929626952.jpg",
+      "tanggal": "2026-11-09",
+      "keterangan": "Seluruh siswa dan dewan guru mengikuti upacara bendera dengan khidmat."
+    },
+    {
+      "id": 3,
+      "judul": "Latihan Navigasi Kompas Regu Pramuka Penggalang",
+      "tipe": "foto",
+      "kategori": "Pramuka",
+      "url": "/src/assets/images/pramuka_ekskul_sd_1794929628284.jpg",
+      "tanggal": "2026-11-08",
+      "keterangan": "Praktik membaca arah mata angin dan peta lapangan di halaman sekolah."
+    },
+    {
+      "id": 4,
+      "judul": "Latihan Jurus Dasar Pencak Silat Siswa SD",
+      "tipe": "foto",
+      "kategori": "Olahraga",
+      "url": "/src/assets/images/seni_silat_sd_1794929628136.jpg",
+      "tanggal": "2026-11-05",
+      "keterangan": "Pembinaan fisik dan sportivitas melalui ekstrakurikuler bela diri."
+    },
+    {
+      "id": 5,
+      "judul": "Penyerahan Piala Juara OSN & Lomba Akademik",
+      "tipe": "foto",
+      "kategori": "Perlombaan",
+      "url": "/src/assets/images/prestasi_lomba_sd_1794929627712.jpg",
+      "tanggal": "2026-11-12",
+      "keterangan": "Kebanggaan siswa berprestasi bersama guru pembimbing."
+    },
+    {
+      "id": 6,
+      "judul": "Refleksi Pembelajaran & Rapat Dewan Guru",
+      "tipe": "foto",
+      "kategori": "Kegiatan Guru",
+      "url": "/src/assets/images/kepala_sekolah_portrait_1794929628049.jpg",
+      "tanggal": "2026-10-25",
+      "keterangan": "Koordinasi peningkatan mutu layanan pendidikan bersama Kepala Sekolah."
+    },
+    {
+      "id": 7,
+      "judul": "Gelar Karya P5 Tari Daerah Sumatera Selatan",
+      "tipe": "foto",
+      "kategori": "Kegiatan Sekolah",
+      "url": "/src/assets/images/seni_silat_sd_1794929628136.jpg",
+      "tanggal": "2026-10-28",
+      "keterangan": "Pementasan budaya nusantara oleh peserta didik SDN Mulya Agung."
+    },
+    {
+      "id": 8,
+      "judul": "Taman Baca Adiwiyata & Kebun Hijau Sekolah",
+      "tipe": "foto",
+      "kategori": "Lingkungan Sekolah",
+      "url": "/src/assets/images/lingkungan_sekolah_asri_1794929629703.jpg",
+      "tanggal": "2026-11-02",
+      "keterangan": "Pojok baca terbuka yang teduh dan ramah anak di halaman sekolah."
+    }
+  ],
+  "dokumen": [
+    {
+      "id": 1,
+      "judul": "Formulir & Juknis Pendaftaran PPDB 2026/2027",
+      "kategori": "Informasi PPDB",
+      "format": "TXT / Cetak",
+      "ukuran": "18 KB",
+      "tanggal": "2026-11-15",
+      "deskripsi": "Panduan lengkap syarat, jadwal, jalur zonasi/afirmasi, dan format formulir PPDB SDN Mulya Agung.",
+      "kontenDokumen": "PETUNJUK TEKNIS PENERIMAAN PESERTA DIDIK BARU (PPDB)\nSDN MULYA AGUNG — KECAMATAN LALAN, KAB. MUSI BANYUASIN\nTAHUN PELAJARAN 2026/2027\n\n1. Persyaratan Umum:\n- Berusia 6-7 tahun per 1 Juli 2026\n- Fotokopi Akta Kelahiran & Kartu Keluarga\n- Fotokopi KTP Orang Tua/Wali\n\n2. Biaya Pendaftaran: GRATIS (Tidak dipungut biaya).\n3. Pendaftaran Online dapat dilakukan melalui menu PPDB di website resmi sekolah.",
+      "jumlahUnduhan": 142
+    },
+    {
+      "id": 2,
+      "judul": "Surat Edaran Jadwal PSAS Semester Ganjil 2026",
+      "kategori": "Surat Edaran",
+      "format": "TXT / Cetak",
+      "ukuran": "14 KB",
+      "tanggal": "2026-11-10",
+      "deskripsi": "Jadwal resmi ujian sumatif akhir semester untuk seluruh mata pelajaran Kelas 1 sampai Kelas 6.",
+      "kontenDokumen": "PEMERINTAH KABUPATEN MUSI BANYUASIN\nDINAS PENDIDIKAN DAN KEBUDAYAAN\nSDN MULYA AGUNG KECAMATAN LALAN\n\nSURAT EDARAN JADWAL PSAS GANJIL 2026/2027\nHari/Tanggal: Senin - Sabtu, 1 - 6 Desember 2026\nWaktu: 07.30 - 11.00 WIB\nHarap orang tua memastikan siswa sarapan pagi dan hadir tepat waktu.",
+      "jumlahUnduhan": 98
+    },
+    {
+      "id": 3,
+      "judul": "Kalender Pendidikan SDN Mulya Agung TA 2026/2027",
+      "kategori": "Kalender Pendidikan",
+      "format": "TXT / Cetak",
+      "ukuran": "22 KB",
+      "tanggal": "2026-07-14",
+      "deskripsi": "Rincian hari efektif belajar, libur semester, peringatan hari besar, dan jadwal asesmen.",
+      "kontenDokumen": "KALENDER PENDIDIKAN SDN MULYA AGUNG 2026/2027\n- Awal Tahun Ajaran: 13 Juli 2026\n- Asesmen Nasional (ANBK): Oktober 2026\n- PSAS Ganjil: 1 - 6 Desember 2026\n- Pembagian Rapor Ganjil: 19 Desember 2026\n- Libur Semester Ganjil: 21 Des 2026 - 2 Jan 2027",
+      "jumlahUnduhan": 215
+    },
+    {
+      "id": 4,
+      "judul": "Formulir Surat Keterangan Pindah Sekolah (Mutasi Masuk)",
+      "kategori": "Formulir",
+      "format": "TXT / Cetak",
+      "ukuran": "12 KB",
+      "tanggal": "2026-08-05",
+      "deskripsi": "Template permohonan mutasi masuk peserta didik dari sekolah lain ke SDN Mulya Agung.",
+      "kontenDokumen": "FORMULIR PERMOHONAN MUTASI PESERTA DIDIK\nKepada Yth. Kepala SDN Mulya Agung\nKecamatan Lalan, Kabupaten Musi Banyuasin\n\nMohon kelengkapan dokumen: Surat Keterangan Pindah dari sekolah asal, Rapor asli, dan Surat Mutasi Dapodik.",
+      "jumlahUnduhan": 64
+    },
+    {
+      "id": 5,
+      "judul": "Tata Tertib Siswa & Komitmen Sekolah Ramah Anak",
+      "kategori": "Dokumen Lainnya",
+      "format": "TXT / Cetak",
+      "ukuran": "16 KB",
+      "tanggal": "2026-07-20",
+      "deskripsi": "Pedoman disiplin positif, seragam sekolah, dan pencegahan perundungan di SDN Mulya Agung.",
+      "kontenDokumen": "TATA TERTIB & KOMITMEN SEKOLAH RAMAH ANAK SDN MULYA AGUNG\n1. Hadir di sekolah maksimal pukul 07.15 WIB.\n2. Menerapkan budaya 5S (Senyum, Salam, Sapa, Sopan, Santun).\n3. Dilarang keras melakukan perundungan fisik maupun verbal.\n4. Menjaga kebersihan kelas dan taman sekolah.",
+      "jumlahUnduhan": 179
+    }
+  ],
+  "ppdb": [
+    {
+      "id": 1,
+      "nomorPendaftaran": "PPDB-2026-0001",
+      "namaCalonSiswa": "Arka Pratama Wijaya",
+      "nik": "1606091205190001",
+      "jenisKelamin": "Laki-laki",
+      "tempatLahir": "Musi Banyuasin",
+      "tanggalLahir": "2019-05-12",
+      "agama": "Islam",
+      "alamat": "Dusun I Desa Mulya Agung, Kec. Lalan",
+      "asalTkPaud": "TK Pertiwi Mulya Agung",
+      "namaAyah": "Budi Wijaya",
+      "namaIbu": "Sri Lestari",
+      "noWhatsappOrtu": "081277889900",
+      "jalurPendaftaran": "Zonasi",
+      "statusVerifikasi": "Diterima",
+      "catatanPanitia": "Berkas lengkap dan sesuai zonasi Desa Mulya Agung.",
+      "tanggalDaftar": "2026-11-10T09:15:00.000Z"
+    },
+    {
+      "id": 2,
+      "nomorPendaftaran": "PPDB-2026-0002",
+      "namaCalonSiswa": "Siti Humaira Az-Zahra",
+      "nik": "1606094408190002",
+      "jenisKelamin": "Perempuan",
+      "tempatLahir": "Palembang",
+      "tanggalLahir": "2019-08-04",
+      "agama": "Islam",
+      "alamat": "Primer 2 Desa Mulya Agung, Kec. Lalan",
+      "asalTkPaud": "PAUD Harapan Bangsa Lalan",
+      "namaAyah": "Ahmad Ridwan",
+      "namaIbu": "Mardiana",
+      "noWhatsappOrtu": "085266554433",
+      "jalurPendaftaran": "Zonasi",
+      "statusVerifikasi": "Menunggu Verifikasi",
+      "catatanPanitia": "Menunggu penyerahan fotokopi Akta Kelahiran fisik ke posko.",
+      "tanggalDaftar": "2026-11-14T11:20:00.000Z"
+    }
+  ],
+  "agenda": [
+    {
+      "id": 1,
+      "judul": "Rapat Persiapan PSAS Ganjil & Evaluasi Program Literasi",
+      "tanggalMulai": "2026-11-23",
+      "tanggalSelesai": "2026-11-23",
+      "waktu": "12.30 – 14.30 WIB",
+      "lokasi": "Ruang Guru SDN Mulya Agung",
+      "kategori": "Rapat Guru",
+      "keterangan": "Diikuti seluruh guru kelas, guru mapel, dan kepala sekolah."
+    },
+    {
+      "id": 2,
+      "judul": "Upacara Peringatan Hari Guru Nasional & PGRI ke-81",
+      "tanggalMulai": "2026-11-25",
+      "tanggalSelesai": "2026-11-25",
+      "waktu": "07.15 – 09.30 WIB",
+      "lokasi": "Lapangan Utama SDN Mulya Agung",
+      "kategori": "Peringatan Hari Besar",
+      "keterangan": "Upacara bendera diikuti pentas puisi terima kasih guru oleh siswa."
+    },
+    {
+      "id": 3,
+      "judul": "Penilaian Sumatif Akhir Semester (PSAS) Ganjil 2026",
+      "tanggalMulai": "2026-12-01",
+      "tanggalSelesai": "2026-12-06",
+      "waktu": "07.30 – 11.00 WIB",
+      "lokasi": "Ruang Kelas 1 s.d. 6",
+      "kategori": "Akademik",
+      "keterangan": "Evaluasi pembelajaran akhir semester ganjil Tahun Ajaran 2026/2027."
+    },
+    {
+      "id": 4,
+      "judul": "Class Meeting & Lomba Kebersihan Taman Kelas",
+      "tanggalMulai": "2026-12-14",
+      "tanggalSelesai": "2026-12-16",
+      "waktu": "08.00 – 11.30 WIB",
+      "lokasi": "Lingkungan SDN Mulya Agung",
+      "kategori": "Kesiswaan",
+      "keterangan": "Pertandingan olahraga persahabatan antarkelas pasca ujian."
+    },
+    {
+      "id": 5,
+      "judul": "Pembagian Rapor Semester Ganjil & Pertemuan Orang Tua",
+      "tanggalMulai": "2026-12-19",
+      "tanggalSelesai": "2026-12-19",
+      "waktu": "08.00 – 11.00 WIB",
+      "lokasi": "Ruang Kelas Masing-masing",
+      "kategori": "Akademik",
+      "keterangan": "Konsultasi capaian perkembangan belajar siswa bersama wali kelas."
+    }
+  ],
+  "pesanKontak": [
+    {
+      "id": 1,
+      "nama": "Bapak Suparman",
+      "email": "suparman.lalan@gmail.com",
+      "noHp": "081271004567",
+      "subjek": "Pertanyaan Jadwal Pendaftaran PPDB Jalur Zonasi",
+      "pesan": "Assalamu’alaikum, mohon informasi apakah KK desa sebelah masih masuk zonasi terdekat SDN Mulya Agung?",
+      "tanggal": "2026-11-15T10:05:00.000Z",
+      "statusDibaca": false
+    }
+  ],
+  "pengunjung": {
+    "totalKunjungan": 12840,
+    "kunjunganHariIni": 48,
+    "tanggalHariIni": "2026-11-17",
+    "harian": [
+      {
+        "tanggal": "2026-11-11",
+        "jumlah": 74
+      },
+      {
+        "tanggal": "2026-11-12",
+        "jumlah": 96
+      },
+      {
+        "tanggal": "2026-11-13",
+        "jumlah": 88
+      },
+      {
+        "tanggal": "2026-11-14",
+        "jumlah": 63
+      },
+      {
+        "tanggal": "2026-11-15",
+        "jumlah": 112
+      },
+      {
+        "tanggal": "2026-11-16",
+        "jumlah": 94
+      },
+      {
+        "tanggal": "2026-11-17",
+        "jumlah": 48
+      }
+    ]
+  }
+}

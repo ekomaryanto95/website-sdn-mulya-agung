@@ -1,0 +1,8 @@
+{
+  "name": "SDN Mulya Agung",
+  "description": "Website resmi SDN Mulya Agung, Kecamatan Lalan, Kabupaten Musi Banyuasin, Sumatera Selatan. Portal informasi profil sekolah, guru, kurikulum, berita, prestasi, galeri, pengumuman, unduhan, PPDB online, dan manajemen administrasi sekolah.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
